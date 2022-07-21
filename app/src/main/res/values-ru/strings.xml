@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">НМедиа</string>
     <string name="NMedia" translatable="false">НМедиа!</string>
+    <string name="avatar_description">Аватар автора</string>
+    <string name="description_post_menu">Меню поста</string>
+    <string name="description_post_like">Нравиться</string>
+    <string name="description_post_share">Поделиться</string>
+    <string name="description_post_views">Просмотры</string>
 </resources>

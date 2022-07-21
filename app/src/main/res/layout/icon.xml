@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lineLike"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:showDividers="end|none"
+    android:textAlignment="textEnd"
+    android:visibility="visible">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:contentDescription="@string/description_post_like"
+        android:cursorVisible="false"
+        android:drawableStart="@drawable/ic_like_24"
+        android:textColor="#050505"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:icon="@drawable/ic_like_24"
+        app:iconGravity="start"
+        app:iconTint="#090909"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@sample/posts.json/data/likes"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/repost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:contentDescription="@string/description_post_like"
+        android:textAlignment="textStart"
+        android:textColor="#050505"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:icon="@drawable/ic_share_24"
+        app:iconGravity="start"
+        app:iconTint="#090909"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="@sample/posts.json/data/repost"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/views"
+        android:layout_width="203dp"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:contentDescription="@string/description_post_like"
+        android:textAlignment="textEnd"
+        android:textAllCaps="false"
+        android:textColor="#050505"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:icon="@drawable/ic_eye_24"
+        app:iconGravity="textStart"
+        app:iconTint="#090909"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="@sample/posts.json/data/views"
+        tools:visibility="visible" />
+</LinearLayout>
