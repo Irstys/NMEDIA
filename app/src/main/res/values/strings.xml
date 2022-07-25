@@ -5,6 +5,6 @@
     <string name="description_post_menu">Post menu</string>
     <string name="description_post_like">Like</string>
     <string name="description_post_share">Share</string>
-    <string name="description_post_">Views</string>
+    <string name="description_post_views">Views</string>
 
 </resources>

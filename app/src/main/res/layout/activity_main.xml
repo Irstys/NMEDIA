@@ -52,18 +52,15 @@
         android:contentDescription="@string/description_post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/author"
-        app:src="@drawable/ic_menu_24"
         app:srcCompat="@drawable/ic_menu_24" />
 
-
-    <TextView
+   <TextView
         android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginStart"
         android:layout_marginTop="@dimen/marginStart"
         android:layout_marginEnd="@dimen/marginStart"
-        android:layout_padding="@dimen/marginStart"
         android:autoLink="web"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -141,7 +138,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier1"
         app:layout_constraintTop_toTopOf="@id/barrier1"
-        app:layout_constraintend_toEndOf="parent"
         tools:text="@sample/posts.json/data/views"
         tools:visibility="visible" />
 
