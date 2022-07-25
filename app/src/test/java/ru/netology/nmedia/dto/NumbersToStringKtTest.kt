@@ -10,7 +10,7 @@ class NumbersToStringKtTest {
     fun numbersToString() {
         val num = 156000
         val result:String =numbersToString(num)
-        assertNotEquals("156K",result)
+        assertEquals("156K",result)
     }
     @Test
     fun numbersToString_erros() {
