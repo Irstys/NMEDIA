@@ -11,4 +11,6 @@
     <dimen name="iconButtonPadding">12dp</dimen>
     <dimen name="iconButtonMinSize">48dp</dimen>
     <dimen name="iconButtonPaddingTop">24dp</dimen>
+    <dimen name="commonSpacing">16dp</dimen>
+    <dimen name="textSpacing">8dp</dimen>
 </resources>
