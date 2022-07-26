@@ -4,6 +4,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
+
 class NumbersToStringKtTest {
 
     @Test
@@ -13,7 +14,7 @@ class NumbersToStringKtTest {
         assertEquals("156K",result)
     }
     @Test
-    fun numbersToString_erros() {
+    fun numbersToString_error() {
         val num = 15600
         val result:String =numbersToString(num)
         assertNotEquals("156K",result)
