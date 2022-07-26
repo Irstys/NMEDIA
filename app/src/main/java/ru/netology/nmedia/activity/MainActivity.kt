@@ -3,10 +3,12 @@ package ru.netology.nmedia.activity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import ru.netology.nmedia.R
+//import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
-import ru.netology.nmedia.dto.numbersToString
+//import ru.netology.nmedia.databinding.CardPostBinding
+//import ru.netology.nmedia.dto.numbersToString
 import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.adapter.PostsAdapter
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,8 +17,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val viewModel: PostViewModel by viewModels()
-        viewModel.data.observe(this) { post ->
-            with(binding) {
+        val adapter = PostsAdapter(
+            onLikeListener = {
+                viewModel.likeById(it.id)
+                },
+            onShareListener = {
+                viewModel.shareById(it.id)
+                }
+        )
+        binding.list.adapter = adapter
+        viewModel.data.observe(this) {posts ->
+           adapter.submitList(posts)
+        }
+        /*viewModel.data.observe(this) { posts ->
+            posts.map{post->
+                CardPostBinding.inflate(layoutInflater,binding.container, true).apply {
                     author.text = post.author
                     published.text = post.published
                     content.text = post.content
@@ -26,13 +41,15 @@ class MainActivity : AppCompatActivity() {
                     )
                     likeCount.text = numbersToString(post.likes)
                     shareCount.text = numbersToString(post.repost)
+                    like.setOnClickListener {
+                        viewModel.likeById(post.id)
+                    }
+                    share.setOnClickListener {
+                        viewModel.shareById(post.id)
+                    }
+                }.root
             }
-        }
-        binding.like.setOnClickListener {
-            viewModel.like()
-        }
-        binding.share.setOnClickListener {
-            viewModel.share()
-        }
+        }*/
     }
 }
+
