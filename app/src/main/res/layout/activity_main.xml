@@ -6,12 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/toolsTop"
+        app:layout_constraintBottom_toTopOf="@+id/content"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/card_post" />
 
@@ -20,8 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="content,save" />
-
+        app:constraint_referenced_ids="content" />
 
     <EditText
         android:id="@+id/content"
@@ -38,36 +38,35 @@
         app:layout_constraintStart_toStartOf="parent"
         />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.Group
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:constraint_referenced_ids="save,cancel"
+        android:visibility="gone"
+        app:constraint_referenced_ids="save, cancel" />
+
+    <ImageButton
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/description_post_save"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_save" />
 
-        <ImageButton
-            android:id="@+id/save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/commonSpacing"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/description_post_save"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_save" />
-
-        <ImageButton
+    <ImageButton
             android:id="@+id/cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:contentDescription="@string/description_post_cancel"
-            app:layout_constraintBottom_toTopOf="@+id/save"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_cancel_24" />
+            app:layout_constraintStart_toEndOf="@id/content"
+            app:layout_constraintBottom_toBottomOf="@id/toolsTop"
+            app:srcCompat="@drawable/ic_cancel" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

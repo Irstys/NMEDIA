@@ -16,8 +16,6 @@ interface OnInteractionListener {
     fun onShareListener(post: Post) {}
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
-    fun onCancelListener(post: Post) {}
-
 }
 class PostsAdapter(
     private val onInteractionListener:  OnInteractionListener,

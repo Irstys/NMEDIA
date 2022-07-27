@@ -35,6 +35,10 @@ class MainActivity : AppCompatActivity() {
             override fun onRemoveListener(post: Post) {
                 viewModel.removeById(post.id)
             }
+            override fun onEditListener(post: Post) {
+                binding.group.visibility = View.VISIBLE
+                viewModel.edit(post)
+            }
         })
         binding.list.adapter = adapter
         viewModel.data.observe(this) {posts ->
@@ -42,12 +46,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.edited.observe(this) { post ->
+
             if (post.id == 0L) {
                 return@observe
             }
             with(binding.content) {
                 requestFocus()
-                binding.group.visibility = View.VISIBLE
                 setText(post.content)
             }
         }
@@ -69,17 +73,20 @@ class MainActivity : AppCompatActivity() {
                 setText("")
 
                 clearFocus()
-                binding.group.visibility = View.GONE
                 AndroidUtils.hideKeyboard(this)
+                binding.group.visibility = View.GONE
             }
         }
         binding.cancel.setOnClickListener {
-            binding.group.visibility = View.GONE
-            with(binding.content) {
+              with(binding.content) {
                 setText("")
                 clearFocus()
                 AndroidUtils.hideKeyboard(this)
+                binding.group.visibility = View.GONE
             }
+        }
+        binding.content.setOnClickListener{
+            binding.group.visibility = View.VISIBLE
         }
         /*viewModel.data.observe(this) { posts ->
             posts.map{post->
