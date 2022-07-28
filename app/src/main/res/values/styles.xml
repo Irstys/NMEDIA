@@ -2,19 +2,16 @@
 <resources>
     <style name="Widget.AppTheme.CheckButton"
         parent="Widget.MaterialComponents.Button.TextButton.Icon">
-        <item name="backgroundTint">@android:color/transparent</item>
         <item name="buttonTint">@color/like_checkbox_tint</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
+        <item name="iconTint">@color/like_checkbox_tint</item>
         <item name="android:minWidth">@dimen/iconButtonMinSize</item>
         <item name="android:minHeight">@dimen/iconButtonMinSize</item>
     </style>
 
-    <style name="Widget.AppTheme.Viewing" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+    <style name="Widget.AppTheme.Viewing"
+        parent="Widget.MaterialComponents.Button.TextButton.Icon">
         <item name="iconTint">@color/icon_button_tint</item>
-        <item name="rippleColor">@android:color/transparent</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
         <item name="android:minWidth">@dimen/iconButtonMinSize</item>
         <item name="android:minHeight">@dimen/iconButtonMinSize</item>
-        <item name="android:colorBackground">?attr/colorControlNormal</item>
     </style>
 </resources>
