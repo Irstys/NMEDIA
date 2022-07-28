@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">NMedia</string>
-    <string name="NMedia">NMedia!</string>
     <string name="avatar_description">Author avatar</string>
     <string name="description_post_menu">Post menu</string>
     <string name="description_post_like">Like</string>

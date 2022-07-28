@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="postAvatarSize">48dp</dimen>
-    <dimen name="activityPadding">48dp</dimen>
-    <dimen name="paddingTop">16dp</dimen>
-    <dimen name="paddingStart">8dp</dimen>
-    <dimen name="paddingEnd">16dp</dimen>
     <dimen name="margin">16dp</dimen>
     <dimen name="marginStart">16dp</dimen>
     <dimen name="marginEnd">8dp</dimen>
-    <dimen name="iconButtonPadding">12dp</dimen>
     <dimen name="iconButtonMinSize">48dp</dimen>
-    <dimen name="iconButtonPaddingTop">24dp</dimen>
     <dimen name="commonSpacing">16dp</dimen>
     <dimen name="textSpacing">8dp</dimen>
 </resources>

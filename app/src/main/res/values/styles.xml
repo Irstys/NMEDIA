@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.AppTheme.CheckButton"
+        parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="buttonTint">#ff0000</item>
+        <item name="android:textColor">?attr/colorControlNormal</item>
+        <item name="android:minWidth">@dimen/iconButtonMinSize</item>
+        <item name="android:minHeight">@dimen/iconButtonMinSize</item>
+    </style>
+
+    <style name="Widget.AppTheme.Viewing" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name="iconTint">?attr/colorControlNormal</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="android:textColor">?attr/colorControlNormal</item>
+        <item name="android:minWidth">@dimen/iconButtonMinSize</item>
+        <item name="android:minHeight">@dimen/iconButtonMinSize</item>
+        <item name="android:colorBackground">?attr/colorControlNormal</item>
+    </style>
+</resources>
