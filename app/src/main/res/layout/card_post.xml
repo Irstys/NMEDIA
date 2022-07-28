@@ -114,7 +114,7 @@
         tools:visibility="visible"
         android:checkable="true"
         tools:text="@sample/posts.json/data/repost"
-        style="@style/Widget.AppTheme.CheckButton"/>
+        style="@style/Widget.AppTheme.Viewing"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/views"
