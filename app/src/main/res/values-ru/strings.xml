@@ -11,4 +11,7 @@
     <string name="error_empty_content">Сообщение не может быть пустым</string>
     <string name="description_post_save">Сохранить</string>
     <string name="description_post_cancel">Отменить</string>
+    <string name="add_post">Добавить пост</string>
+    <string name="chooser_share_post">Поделиться</string>
+    <string name="save">Сохранить</string>
 </resources>
