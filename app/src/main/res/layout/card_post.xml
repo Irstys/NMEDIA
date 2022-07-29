@@ -74,14 +74,37 @@
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="avatar,published,menu" />
+    <View
+        android:id="@+id/video_banner"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/image_video"
+        app:layout_constraintTop_toBottomOf="@id/content"/>
 
+    <View
+        android:id="@+id/play_video"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@android:drawable/ic_media_play"
+        app:layout_constraintTop_toTopOf="@id/video_banner"
+        app:layout_constraintBottom_toBottomOf="@id/video_banner"
+        app:layout_constraintStart_toStartOf="@id/video_banner"
+        app:layout_constraintEnd_toEndOf="@id/video_banner"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/video_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:constraint_referenced_ids="video_banner, play_video"/>
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/marginStart"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="content" />
+        app:constraint_referenced_ids="video_banner"  />
 
 
     <com.google.android.material.button.MaterialButton

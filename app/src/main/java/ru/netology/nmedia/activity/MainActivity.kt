@@ -1,20 +1,16 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
-import android.text.TextUtils
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import ru.netology.nmedia.activity.*
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
@@ -23,13 +19,13 @@ class MainActivity : AppCompatActivity() {
         private const val NEW_POST_REQUEST_CODE = 1
         private const val EDIT_POST_REQUEST_CODE = 1
     }
+    val viewModel : PostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val viewModel: PostViewModel by viewModels()
 
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLikeListener(post: Post) {
@@ -55,28 +51,58 @@ class MainActivity : AppCompatActivity() {
                 //            binding.group.visibility = View.VISIBLE
                 viewModel.edit(post)
             }
+            override fun onPlayVideoClicked(post: Post){
+                viewModel.PlayVideoClicked(post)
+            }
+
         })
+
         binding.list.adapter = adapter
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
         }
+
+        binding.addPost.setOnClickListener {
+            viewModel.onAddClicked()
+        }
+
         viewModel.edited.observe(this) { post ->
             if (post.id == 0L) {
                 return@observe
             }
         }
-
-        val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
-            result ?: return@registerForActivityResult
-            viewModel.changeContent(result)
-            viewModel.save()
+        viewModel.sharePostContent.observe(this) { postContent ->
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, postContent)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(
+                intent, getString(R.string.chooser_share_post)
+            )
+            startActivity(shareIntent)
         }
 
-        binding.addPost.setOnClickListener {
-            newPostLauncher.launch()
+        viewModel.playVideo.observe(this) { videoUrl ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            }
+        }
 
+        val postContentActivityLauncher = registerForActivityResult(
+            PostContentActivity.PostContentResultContract
+        ) { postContent ->
+            postContent ?: return@registerForActivityResult
+            viewModel.onSaveButtonClicked(postContent)
+
+        }
+        viewModel.navigateToPostContentScreenEvent.observe(this) {
+            val contentForEdit = viewModel.currentPost.value?.content
+            postContentActivityLauncher.launch(contentForEdit)
         }
     }
+
 
  /*       viewModel.edited.observe(this) { post ->
 

@@ -94,26 +94,26 @@ class PostRepositoryInMemoryImpl : PostRepository {
     override fun getAll():  LiveData<List<Post>> = data
 
     override fun save(post:Post){
-        if (post.id == 0L) {
-            posts = listOf(
-                post.copy(
-                    id = nextId++,
-                    author = "Me",
-                    likedByMe = false,
-                    published = "now"
-                )
-            ) + posts
-            data.value = posts
-            return
-        }
-
-        posts = posts.map {
-            if (it.id != post.id) it else it.copy(content = post.content)
-        }
+        if (post.id == PostRepository.NEW_POST_ID) insert(post) else update(post)
         data.value = posts
     }
 
+    private fun insert(post: Post) {
+        data.value = listOf(
+            post.copy(
+                id = nextId++,
+                author = "Me",
+                likedByMe = false,
+                published = "now"
+            )
+        ) + posts
+    }
 
+    private fun update(post: Post) {
+        posts = posts.map {
+            if (it.id != post.id) it else it.copy(content = post.content)
+        }
+    }
 
     override fun likeById(id:Long) {
         posts = posts.map {

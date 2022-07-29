@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
+import ru.netology.nmedia.util.SingleLiveEvent
 
 private val empty = Post(
     id = 0,
@@ -17,14 +18,34 @@ private val empty = Post(
     views=0
 )
 
-class PostViewModel : ViewModel() {
+class PostViewModel : ViewModel(){
     // упрощённый вариант
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
-    val edited = MutableLiveData(empty)
 
-    val navigateToPostContentScreenEvent = SingleLiveEvent<Unit?>()
-    val navigateToEditPostContentScreenEvent = SingleLiveEvent<String?>()
+    val sharePostContent = SingleLiveEvent<String>()
+    val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
+
+    val playVideo = SingleLiveEvent<String>()
+
+    val currentPost = MutableLiveData<Post?>(null)
+
+    fun onSaveButtonClicked(content: String) {
+        if (content.isBlank()) return
+
+        val post = currentPost.value?.copy(
+            content = content
+        ) ?: Post(
+            id = PostRepository.NEW_POST_ID,
+            author = "Vladimir",
+            content = content,
+            published = "Date"
+        )
+        repository.save(post)
+        currentPost.value = null
+    }
+
+    val edited = MutableLiveData(empty)
 
     fun save() {
         edited.value?.let {
@@ -34,7 +55,16 @@ class PostViewModel : ViewModel() {
     }
 
     fun edit(post: Post) {
-        edited.value = post
+        currentPost.value = post
+        navigateToPostContentScreenEvent.value = post.content
+    }
+
+    fun onAddClicked() {
+        navigateToPostContentScreenEvent.call()
+    }
+
+    fun onCloseEditClicked() {
+        currentPost.value = null
     }
 
     fun changeContent(content: String) {
@@ -46,6 +76,15 @@ class PostViewModel : ViewModel() {
     }
 
     fun likeById(id:Long) = repository.likeById(id)
-    fun shareById(id:Long) = repository.shareById(id)
+    fun shareById(post: Post) {
+        sharePostContent.value = post.content
+    }
     fun removeById(id:Long) =repository.removeById(id)
+    fun PlayVideoClicked (post: Post) {
+        val url: String = requireNotNull(post.video) {
+            "Url must not be null"
+        }
+        playVideo.value = url
+    }
 }
+
