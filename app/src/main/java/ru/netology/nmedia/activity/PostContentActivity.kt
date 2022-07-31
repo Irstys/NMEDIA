@@ -24,7 +24,7 @@ class PostContentActivity : AppCompatActivity() {
             binding.edit.setText(extras.getString(RESULT_KEY_EDIT))
         }
 
-        binding.edit.focusAndShowKeyboard()
+        binding.edit.requestFocus()
 
         binding.buttonOk.setOnClickListener {
             val intent = Intent()
@@ -37,7 +37,13 @@ class PostContentActivity : AppCompatActivity() {
             }
             finish()
         }
+        binding.buttonCancel.setOnClickListener {
+            val intent = Intent()
 
+            setResult(Activity.RESULT_CANCELED, intent)
+
+            finish()
+        }
     }
 
     object PostContentResultContract : ActivityResultContract<String?, String?>() {
