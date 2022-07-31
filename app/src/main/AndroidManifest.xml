@@ -3,6 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ru.netology.nmedia">
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="*" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NMedia">
+        <activity
+            android:name=".activity.NewPostActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".activity.EditPostActivity"
+            android:exported="false" />
         <activity android:name=".activity.IntentHandlerActivity"
             android:exported="true">
             <intent-filter>
@@ -19,11 +33,9 @@
             </intent-filter>
 
         </activity>
-
         <activity
             android:name=".activity.PostContentActivity"
             android:exported="false" />
-
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
@@ -34,10 +46,5 @@
             </intent-filter>
         </activity>
     </application>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="*" />
-        </intent>
-    </queries>
+
 </manifest>

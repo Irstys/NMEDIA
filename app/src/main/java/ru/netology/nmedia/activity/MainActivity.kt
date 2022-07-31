@@ -13,13 +13,9 @@ import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
 class MainActivity : AppCompatActivity() {
-    companion object {
-        private const val NEW_POST_REQUEST_CODE = 1
-        private const val EDIT_POST_REQUEST_CODE = 1
-    }
-    val viewModel : PostViewModel by viewModels()
+
+    val viewModel: PostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val adapter = PostsAdapter(object : OnInteractionListener {
+
             override fun onLikeListener(post: Post) {
                 viewModel.likeById(post.id)
             }
@@ -41,18 +38,25 @@ class MainActivity : AppCompatActivity() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
+                viewModel.shareById(post)
             }
 
             override fun onRemoveListener(post: Post) {
                 viewModel.removeById(post.id)
             }
 
+
             override fun onEditListener(post: Post) {
-                //            binding.group.visibility = View.VISIBLE
+                // binding.group.visibility = View.VISIBLE
                 viewModel.edit(post)
             }
-            override fun onPlayVideoClicked(post: Post){
-                viewModel.PlayVideoClicked(post)
+
+            override fun onPlayVideoListener(post: Post) {
+                viewModel.playVideoClicked(post)
+            }
+
+            override fun onAddListener() {
+                viewModel.addPost()
             }
 
         })
@@ -61,27 +65,45 @@ class MainActivity : AppCompatActivity() {
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
         }
-
-        binding.addPost.setOnClickListener {
-            viewModel.onAddClicked()
+        val newPostLauncher = registerForActivityResult(
+            NewPostContentResultContract()
+        ) { result ->
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result)
+            viewModel.save()
+        }
+        val editPostLauncher = registerForActivityResult(
+            EditPostContentResultContract()
+        ) { result ->
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result)
+            viewModel.save()
         }
 
-        viewModel.edited.observe(this) { post ->
+        viewModel.navigateToNewPostActivityEvent.observe(this) {
+            println("newPostLauncher.launch()")
+            newPostLauncher.launch()
+        }
+
+        viewModel.navigateToEditPostActivityEvent.observe(this) {
+            println("editPostLauncher.launch($it)")
+            editPostLauncher.launch(it)
+        }
+
+        viewModel.edited.observe(this) {
+            println("viewModel.edited.observe: ${it.id == 0L}")
+
+            if (it.id == 0L) return@observe
+
+            viewModel.editPost(it.content)
+        }
+
+        /*viewModel.edited.observe(this) { post ->
             if (post.id == 0L) {
                 return@observe
             }
-        }
-        viewModel.sharePostContent.observe(this) { postContent ->
-            val intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, postContent)
-                type = "text/plain"
-            }
-            val shareIntent = Intent.createChooser(
-                intent, getString(R.string.chooser_share_post)
-            )
-            startActivity(shareIntent)
-        }
+            editPostLauncher.launch(post.content)
+        }*/
 
         viewModel.playVideo.observe(this) { videoUrl ->
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
@@ -90,84 +112,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val postContentActivityLauncher = registerForActivityResult(
+        /*       val postContentActivityLauncher = registerForActivityResult(
             PostContentActivity.PostContentResultContract
         ) { postContent ->
             postContent ?: return@registerForActivityResult
             viewModel.onSaveButtonClicked(postContent)
 
-        }
-        viewModel.navigateToPostContentScreenEvent.observe(this) {
-            val contentForEdit = viewModel.currentPost.value?.content
-            postContentActivityLauncher.launch(contentForEdit)
-        }
-    }
-
-
- /*       viewModel.edited.observe(this) { post ->
-
-            if (post.id == 0L) {
-                return@observe
-            }
-            with(binding.content) {
-                requestFocus()
-                setText(post.content)
-            }
-        }
-
-        binding.save.setOnClickListener {
-            with(binding.content) {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        context.getString(R.string.error_empty_content),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                viewModel.changeContent(text.toString())
-                viewModel.save()
-
-                setText("")
-
-                clearFocus()
-                AndroidUtils.hideKeyboard(this)
-                binding.group.visibility = View.GONE
-            }
-        }
-        binding.cancel.setOnClickListener {
-              with(binding.content) {
-                setText("")
-                clearFocus()
-                AndroidUtils.hideKeyboard(this)
-                binding.group.visibility = View.GONE
-            }
-        }
-        binding.content.setOnClickListener{
-            binding.group.visibility = View.VISIBLE
-        }*/
-        /*viewModel.data.observe(this) { posts ->
-            posts.map{post->
-                CardPostBinding.inflate(layoutInflater,binding.container, true).apply {
-                    author.text = post.author
-                    published.text = post.published
-                    content.text = post.content
-                    viewsCount.text = numbersToString(post.views)
-                    like.setImageResource(
-                        if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24
-                    )
-                    likeCount.text = numbersToString(post.likes)
-                    shareCount.text = numbersToString(post.repost)
-                    like.setOnClickListener {
-                        viewModel.likeById(post.id)
-                    }
-                    share.setOnClickListener {
-                        viewModel.shareById(post.id)
-                    }
-                }.root
-            }
-        }
-    }*/
 }
+viewModel.navigateToPostContentScreenEvent.observe(this) {
+    val contentForEdit = viewModel.currentPost.value?.content
+    postContentActivityLauncher.launch(contentForEdit)
+}*/
+
+    }
+}
+
+
 

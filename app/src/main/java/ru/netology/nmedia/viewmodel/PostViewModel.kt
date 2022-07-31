@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
+import ru.netology.nmedia.util.AndroidUtils.hideKeyboard
 import ru.netology.nmedia.util.SingleLiveEvent
 
 private val empty = Post(
@@ -13,58 +14,38 @@ private val empty = Post(
     author = "",
     likedByMe = false,
     published = "",
-    likes=0,
+    likes = 0,
     repost = 0,
-    views=0
+    views = 0
 )
 
-class PostViewModel : ViewModel(){
+class PostViewModel : ViewModel() {
     // упрощённый вариант
     private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
 
     val sharePostContent = SingleLiveEvent<String>()
-    val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
+
+    val navigateToNewPostActivityEvent = SingleLiveEvent<Unit>()
+    val navigateToEditPostActivityEvent = SingleLiveEvent<String?>()
 
     val playVideo = SingleLiveEvent<String>()
 
-    val currentPost = MutableLiveData<Post?>(null)
+    private val currentPost = MutableLiveData<Post?>(null)
 
-    fun onSaveButtonClicked(content: String) {
-        if (content.isBlank()) return
+    val edited: MutableLiveData<Post> = MutableLiveData(empty)
 
-        val post = currentPost.value?.copy(
-            content = content
-        ) ?: Post(
-            id = PostRepository.NEW_POST_ID,
-            author = "Vladimir",
-            content = content,
-            published = "Date"
-        )
-        repository.save(post)
-        currentPost.value = null
-    }
+    fun likeById(id: Long) = repository.likeById(id)
+    fun removeById(id: Long) = repository.removeById(id)
 
-    val edited = MutableLiveData(empty)
-
-    fun save() {
-        edited.value?.let {
-            repository.save(it)
-        }
-        edited.value = empty
+    fun shareById(post: Post) {
+        sharePostContent.value = post.content
+        repository.shareById(post.id)
     }
 
     fun edit(post: Post) {
-        currentPost.value = post
-        navigateToPostContentScreenEvent.value = post.content
-    }
-
-    fun onAddClicked() {
-        navigateToPostContentScreenEvent.call()
-    }
-
-    fun onCloseEditClicked() {
-        currentPost.value = null
+        edited.value = post
+        // navigateToEditPostActivityEvent.value = post.content
     }
 
     fun changeContent(content: String) {
@@ -75,12 +56,45 @@ class PostViewModel : ViewModel(){
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun likeById(id:Long) = repository.likeById(id)
-    fun shareById(post: Post) {
-        sharePostContent.value = post.content
+    fun onSaveButtonClicked(content: String) {
+        if (content.isBlank()) return
+
+        val post = currentPost.value?.copy(
+            content = content
+        ) ?: Post(
+            id = PostRepository.NEW_POST_ID,
+            author = "Irina",
+            content = content,
+            published = "Date"
+        )
+        repository.save(post)
+        currentPost.value = null
     }
-    fun removeById(id:Long) =repository.removeById(id)
-    fun PlayVideoClicked (post: Post) {
+
+    fun save() {
+        edited.value?.let {
+            repository.save(it)
+        }
+        edited.value = empty
+    }
+
+    fun addPost() {
+        navigateToNewPostActivityEvent.call()
+    }
+
+    fun editPost(postContent: String?) { //(post: Post)
+        navigateToEditPostActivityEvent.value = postContent
+    }
+
+    /*   fun editTextCancel(view: TextView) {
+        println("Edit canceled")
+        edited.value = empty
+        view.text = ""
+        view.clearFocus()
+        hideKeyboard(view)
+    }*/
+
+    fun playVideoClicked(post: Post) {
         val url: String = requireNotNull(post.video) {
             "Url must not be null"
         }

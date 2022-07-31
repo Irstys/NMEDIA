@@ -7,10 +7,9 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityPostContentBinding
-import ru.netology.nmedia.util.AndroidUtils.focusAndShowKeyboard
 
-private const val RESULT_KEY = "postNewContent"
-private const val RESULT_KEY_EDIT = "postEditContent"
+private const val INPUT_CONTENT_KEY = "postNewContent"
+private const val RESULT_CONTENT_KEY = "text_content"
 
 class PostContentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,40 +18,41 @@ class PostContentActivity : AppCompatActivity() {
         val binding = ActivityPostContentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val extras = intent.extras
-        if (extras != null) {
-            binding.edit.setText(extras.getString(RESULT_KEY_EDIT))
+        var textContent = ""
+        if (intent.hasExtra(INPUT_CONTENT_KEY)) {
+            textContent = intent.getStringExtra(INPUT_CONTENT_KEY).toString()
         }
-
-        binding.edit.focusAndShowKeyboard()
-
+        binding.edit.setText(textContent)
+        binding.edit.requestFocus()
         binding.buttonOk.setOnClickListener {
-            val intent = Intent()
-            if (binding.edit.text.isNullOrBlank()) {
-                setResult(Activity.RESULT_CANCELED, intent)
-            } else {
-                val content = binding.edit.text.toString()
-                intent.putExtra(Intent.EXTRA_TEXT, content)
-                setResult(Activity.RESULT_OK, intent)
-            }
-            finish()
+            onOkButtonClicked(binding.edit.text.toString())
         }
-
     }
 
-    object PostContentResultContract : ActivityResultContract<String?, String?>() {
-
-        override fun createIntent(context: Context, input: String?): Intent =
-            Intent(
-                context,
-                PostContentActivity::class.java
-            ).putExtra(RESULT_KEY_EDIT, input)
-
-        override fun parseResult(resultCode: Int, intent: Intent?): String? =
-            if (resultCode == Activity.RESULT_OK) {
-                intent?.getStringExtra(RESULT_KEY)
-            } else {
-                null
-            }
+    private fun onOkButtonClicked(postContent: String?) {
+        if (postContent.isNullOrBlank()) {
+            setResult(Activity.RESULT_CANCELED)
+        } else {
+            val resultIntent = Intent()
+            resultIntent.putExtra(RESULT_CONTENT_KEY, postContent)
+            setResult(Activity.RESULT_OK, resultIntent)
+        }
+        finish()
     }
 }
+
+class ResultContract : ActivityResultContract<String?, String?>() {
+    override fun createIntent(context: Context, input: String?): Intent {
+        val intent = Intent(context, PostContentActivity::class.java)
+        if (input != null) {
+            intent.putExtra(INPUT_CONTENT_KEY, input)
+        }
+        return intent
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?) =
+        if (resultCode == Activity.RESULT_OK) {
+            intent?.getStringExtra(RESULT_CONTENT_KEY)
+        } else null
+}
+

@@ -6,18 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".activity.NewPostActivity">
 
-    <EditText
-        android:id="@+id/edit"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonOk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonCancel"
-        android:background="@android:color/transparent"
-        android:gravity="start|top"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonCancel">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:inputType="textMultiLine" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonOk"
