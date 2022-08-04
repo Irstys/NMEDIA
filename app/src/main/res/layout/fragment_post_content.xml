@@ -4,27 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.EditPostActivity">
+    app:navGraph="@navigation/nav_main"
+    tools:context=".activity.PostContentActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
+        android:id="@+id/edit"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/editOk"
+        android:background="@android:color/transparent"
+        android:gravity="start|top"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/buttonOk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editCancel">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textEditPost"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:inputType="textMultiLine" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/buttonCancel"
+        tools:ignore="LabelFor" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/editOk"
+        android:id="@+id/buttonOk"
         style="@style/Widget.AppTheme.Viewing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,7 +36,7 @@
         tools:visibility="visible" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/editCancel"
+        android:id="@+id/buttonCancel"
         style="@style/Widget.AppTheme.Viewing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

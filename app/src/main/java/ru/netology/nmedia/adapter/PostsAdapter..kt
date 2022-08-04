@@ -1,12 +1,16 @@
 package ru.netology.nmedia.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.CardPostFragment.Companion.postId
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
@@ -25,7 +29,7 @@ class PostsAdapter(
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        //val inflater = LayoutInflater.from(parent.context)
+        val inflater = LayoutInflater.from(parent.context)
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PostViewHolder(binding, onInteractionListener)
     }
@@ -66,6 +70,21 @@ class PostViewHolder(
             playVideo.setOnClickListener {
                 onInteractionListener.onPlayVideoListener(post)
             }
+            content.setOnClickListener {
+                linkToPost(it, post.id)
+            }
+            avatar.setOnClickListener {
+                linkToPost(it, post.id)
+            }
+            published.setOnClickListener {
+                linkToPost(it, post.id)
+            }
+            author.setOnClickListener {
+                linkToPost(it, post.id)
+            }
+            content.setOnClickListener {
+                linkToPost(it, post.id)
+            }
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
@@ -85,11 +104,21 @@ class PostViewHolder(
                     }
                 }.show()
             }
+
+
         }
+
+    }
+    private fun linkToPost(view: View?, id: Long) {
+        view?.findNavController()?.navigate(
+            R.id.action_feedFragment_to_cardPostFragment,
+            Bundle().apply {
+                postId = id
+            })
     }
 }
 
-class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
+    class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.id == newItem.id
     }

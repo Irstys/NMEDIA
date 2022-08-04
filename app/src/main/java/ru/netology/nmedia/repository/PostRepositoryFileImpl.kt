@@ -13,6 +13,7 @@ class PostRepositoryFileImpl(private val context: Context) : PostRepository {
     private val filename = "posts.json"
     private var nextId = 1L
     private var posts = emptyList<Post>()
+
     private val data = MutableLiveData(posts)
 
     init {
