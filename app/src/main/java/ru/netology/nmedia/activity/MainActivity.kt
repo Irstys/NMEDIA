@@ -13,19 +13,38 @@ import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
 class MainActivity : AppCompatActivity() {
-    companion object {
-        private const val NEW_POST_REQUEST_CODE = 1
-        private const val EDIT_POST_REQUEST_CODE = 1
-    }
-    val viewModel : PostViewModel by viewModels()
+
+    val viewModel: PostViewModel by viewModels()
+
+    private val postContentActivityLauncher =
+        registerForActivityResult(PostContentActivity.PostContentResultContract) { postContent ->
+            postContent ?: return@registerForActivityResult
+            viewModel.onSaveButtonClicked(postContent)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+//        run {
+//            val preferences = getPreferences(Context.MODE_PRIVATE)
+//            preferences.edit().apply {
+//                putString("key", "value") // putX
+//                commit() // commit - синхронно, apply - асинхронно
+//            }
+//        }
+//
+//        run {
+//            getPreferences(Context.MODE_PRIVATE)
+//                .getString("key", "no value")?.let {
+//                    Snackbar.make(binding.root, it, BaseTransientBottomBar.LENGTH_INDEFINITE)
+//                        .show()
+//                }
+//        }
 
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLikeListener(post: Post) {
@@ -41,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
+                viewModel.shareById(post)
             }
 
             override fun onRemoveListener(post: Post) {
@@ -48,39 +68,40 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onEditListener(post: Post) {
-                //            binding.group.visibility = View.VISIBLE
+                // binding.group.visibility = View.VISIBLE
                 viewModel.edit(post)
             }
-            override fun onPlayVideoClicked(post: Post){
-                viewModel.PlayVideoClicked(post)
+
+            override fun onPlayVideoListener(post: Post) {
+                viewModel.playVideoClicked(post)
             }
 
+            override fun onAddListener() {
+                viewModel.addPost()
+            }
         })
 
         binding.list.adapter = adapter
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
         }
+        /*  val newPostLauncher = registerForActivityResult(
+            NewPostResultContract()
+        ) { result ->
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result)
+            viewModel.save()
+        }*/
 
-        binding.addPost.setOnClickListener {
-            viewModel.onAddClicked()
-        }
+        /* binding.addPost.setOnClickListener {
+            //    viewModel.onAddClicked()
+            postContentActivityLauncher.launch()
+        }*/
 
-        viewModel.edited.observe(this) { post ->
-            if (post.id == 0L) {
+        viewModel.edited.observe(this) { (id) ->
+            if (id == 0L) {
                 return@observe
             }
-        }
-        viewModel.sharePostContent.observe(this) { postContent ->
-            val intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, postContent)
-                type = "text/plain"
-            }
-            val shareIntent = Intent.createChooser(
-                intent, getString(R.string.chooser_share_post)
-            )
-            startActivity(shareIntent)
         }
 
         viewModel.playVideo.observe(this) { videoUrl ->
@@ -102,72 +123,6 @@ class MainActivity : AppCompatActivity() {
             postContentActivityLauncher.launch(contentForEdit)
         }
     }
-
-
- /*       viewModel.edited.observe(this) { post ->
-
-            if (post.id == 0L) {
-                return@observe
-            }
-            with(binding.content) {
-                requestFocus()
-                setText(post.content)
-            }
-        }
-
-        binding.save.setOnClickListener {
-            with(binding.content) {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        context.getString(R.string.error_empty_content),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-
-                viewModel.changeContent(text.toString())
-                viewModel.save()
-
-                setText("")
-
-                clearFocus()
-                AndroidUtils.hideKeyboard(this)
-                binding.group.visibility = View.GONE
-            }
-        }
-        binding.cancel.setOnClickListener {
-              with(binding.content) {
-                setText("")
-                clearFocus()
-                AndroidUtils.hideKeyboard(this)
-                binding.group.visibility = View.GONE
-            }
-        }
-        binding.content.setOnClickListener{
-            binding.group.visibility = View.VISIBLE
-        }*/
-        /*viewModel.data.observe(this) { posts ->
-            posts.map{post->
-                CardPostBinding.inflate(layoutInflater,binding.container, true).apply {
-                    author.text = post.author
-                    published.text = post.published
-                    content.text = post.content
-                    viewsCount.text = numbersToString(post.views)
-                    like.setImageResource(
-                        if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_like_24
-                    )
-                    likeCount.text = numbersToString(post.likes)
-                    shareCount.text = numbersToString(post.repost)
-                    like.setOnClickListener {
-                        viewModel.likeById(post.id)
-                    }
-                    share.setOnClickListener {
-                        viewModel.shareById(post.id)
-                    }
-                }.root
-            }
-        }
-    }*/
 }
+
 

@@ -19,12 +19,7 @@ class PostContentActivity : AppCompatActivity() {
         val binding = ActivityPostContentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val extras = intent.extras
-        if (extras != null) {
-            binding.edit.setText(extras.getString(RESULT_KEY_EDIT))
-        }
-
-        binding.edit.focusAndShowKeyboard()
+        binding.edit.requestFocus()
 
         binding.buttonOk.setOnClickListener {
             val intent = Intent()
@@ -37,7 +32,13 @@ class PostContentActivity : AppCompatActivity() {
             }
             finish()
         }
+        binding.buttonCancel.setOnClickListener {
+            val intent = Intent()
 
+            setResult(Activity.RESULT_CANCELED, intent)
+
+            finish()
+        }
     }
 
     object PostContentResultContract : ActivityResultContract<String?, String?>() {
@@ -46,11 +47,13 @@ class PostContentActivity : AppCompatActivity() {
             Intent(
                 context,
                 PostContentActivity::class.java
-            ).putExtra(RESULT_KEY_EDIT, input)
+            ).apply {
+                putExtra(Intent.EXTRA_TEXT, input)
+            }
 
         override fun parseResult(resultCode: Int, intent: Intent?): String? =
             if (resultCode == Activity.RESULT_OK) {
-                intent?.getStringExtra(RESULT_KEY)
+                intent?.getStringExtra(Intent.EXTRA_TEXT)
             } else {
                 null
             }
