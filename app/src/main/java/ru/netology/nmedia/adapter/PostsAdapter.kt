@@ -22,16 +22,17 @@ interface OnInteractionListener {
     fun onEditListener(post: Post) {}
     fun onPlayVideoListener(post: Post)
     fun onAddListener()
+    fun onPost(post: Post)
 }
 
 class PostsAdapter(
-    private val onInteractionListener: OnInteractionListener
+    private val listener: OnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
+        //    val inflater = LayoutInflater.from(parent.context)
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, onInteractionListener)
+        return PostViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -39,9 +40,10 @@ class PostsAdapter(
         holder.bind(post)
     }
 }
+
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onInteractionListener: OnInteractionListener
+    private val listener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
     private lateinit var post: Post
 
@@ -59,18 +61,25 @@ class PostViewHolder(
             share.text = numbersToString(post.repost)
 
             like.setOnClickListener {
-                onInteractionListener.onLikeListener(post)
+                listener.onLikeListener(post)
             }
             share.setOnClickListener {
-                onInteractionListener.onShareListener(post)
+                listener.onShareListener(post)
+            }
+            thisPost.setOnClickListener { listener.onPost(post) }
+
+            if (post.video == null) {
+                binding.videoGroup.visibility = View.GONE
+            } else {
+                binding.videoGroup.visibility = View.VISIBLE
             }
             videoBanner.setOnClickListener {
-                onInteractionListener.onPlayVideoListener(post)
+                listener.onPlayVideoListener(post)
             }
             playVideo.setOnClickListener {
-                onInteractionListener.onPlayVideoListener(post)
+                listener.onPlayVideoListener(post)
             }
-            content.setOnClickListener {
+           /* content.setOnClickListener {
                 linkToPost(it, post.id)
             }
             avatar.setOnClickListener {
@@ -84,18 +93,19 @@ class PostViewHolder(
             }
             content.setOnClickListener {
                 linkToPost(it, post.id)
-            }
+            }*/
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
+
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.remove -> {
-                                onInteractionListener.onRemoveListener(post)
+                                listener.onRemoveListener(post)
                                 true
                             }
                             R.id.edit -> {
-                                onInteractionListener.onEditListener(post)
+                                listener.onEditListener(post)
                                 true
                             }
 
@@ -109,6 +119,7 @@ class PostViewHolder(
         }
 
     }
+
     private fun linkToPost(view: View?, id: Long) {
         view?.findNavController()?.navigate(
             R.id.action_feedFragment_to_cardPostFragment,
@@ -118,7 +129,7 @@ class PostViewHolder(
     }
 }
 
-    class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
+class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.id == newItem.id
     }
@@ -126,5 +137,7 @@ class PostViewHolder(
     override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem == newItem
     }
+
+    override fun getChangePayload(oldItem: Post, newItem: Post): Any = Unit
 
 }

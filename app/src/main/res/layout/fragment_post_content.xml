@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:navGraph="@navigation/nav_main"
-    tools:context=".activity.PostContentActivity">
+    tools:context=".activity.PostContentFragment">
 
     <EditText
         android:id="@+id/edit"
@@ -13,13 +13,14 @@
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         android:gravity="start|top"
-        android:importantForAutofill="no"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toTopOf="@+id/buttonOk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonCancel"
-        tools:ignore="LabelFor" />
+        tools:text="Post content"
+        android:textSize="24sp"
+        tools:ignore="Autofill,LabelFor" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonOk"
@@ -34,9 +35,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         tools:visibility="visible" />
-
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+        tools:ignore="BottomAppBar,MissingConstraints" />
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonCancel"
+              android:id="@+id/buttonCancel"
         style="@style/Widget.AppTheme.Viewing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

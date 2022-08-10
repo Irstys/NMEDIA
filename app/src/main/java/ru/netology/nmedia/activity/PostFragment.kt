@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
+import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
 import ru.netology.nmedia.databinding.FragmentPostContentBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.AndroidUtils
@@ -21,13 +23,8 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 private const val RESULT_KEY = "postNewContent"
 private const val RESULT_KEY_EDIT = "postEditContent"
 
-class PostContentActivity :  Fragment() {
-    companion object {
-        private const val TEXT_KEY = "TEXT_KEY"
-        var Bundle.textArg: String?
-            set(value) = putString(TEXT_KEY,value)
-            get()=getString(TEXT_KEY)
-    }
+class PostContentFragment : Fragment() {
+
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
@@ -44,13 +41,14 @@ class PostContentActivity :  Fragment() {
         )
 
         arguments?.textArg
-            ?.let(binding.edit::setText)
+            ?.let { binding.edit.setText(it) }
 
         binding.edit.requestFocus()
 
         binding.edit.setText(viewModel.edited.value?.content)
 
-        binding.buttonOk.setOnClickListener {
+        binding.buttonOk.setOnClickListener()
+        {
             val text = binding.edit.text
             if (!text.isNullOrBlank()) {
                 viewModel.onSaveButtonClicked(text.toString())
@@ -61,11 +59,19 @@ class PostContentActivity :  Fragment() {
             findNavController().navigateUp()
         }
 
-        binding.buttonCancel.setOnClickListener{
+        binding.buttonCancel.setOnClickListener()
+        {
             AndroidUtils.hideKeyboard(it)
             findNavController().navigateUp()
         }
         return binding.root
+    }
+
+    companion object {
+        private const val TEXT_KEY = "TEXT_KEY"
+        var Bundle.textArg: String?
+            set(value) = putString(TEXT_KEY, value)
+            get() = getString(TEXT_KEY)
     }
 
 }

@@ -24,11 +24,13 @@ private val empty = Post(
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     // упрощённый вариант
     private val repository: PostRepository = PostRepositoryFileImpl(application)
-   // private val repository: PostRepository = PostRepositoryInMemoryImpl()
+
+    //private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
 
     val sharePostContent = SingleLiveEvent<String>()
-    val navigateToPostContentScreenEvent = SingleLiveEvent<String>()
+    val navigateToPostContentScreenEvent = SingleLiveEvent<Unit?>()
+    val navigateToEditPostContentScreenEvent = SingleLiveEvent<String?>()
 
     val playVideo = SingleLiveEvent<String>()
 
@@ -46,7 +48,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun edit(post: Post) {
         edited.value = post
-        navigateToPostContentScreenEvent.value = post.content
+        navigateToEditPostContentScreenEvent.value = post.content
     }
 
     fun changeContent(content: String) {
@@ -80,18 +82,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addPost() {
+        currentPost.value = null
         navigateToPostContentScreenEvent.call()
     }
 
-    fun onCloseEditClicked() {
-        currentPost.value = null
-    }
+    // fun onCloseEditClicked() {
+    //      currentPost.value = null
+    //  }
 
     fun playVideoClicked(post: Post) {
         val url: String = requireNotNull(post.video) {
             "Url must not be null"
         }
         playVideo.value = url
+
     }
 }
 

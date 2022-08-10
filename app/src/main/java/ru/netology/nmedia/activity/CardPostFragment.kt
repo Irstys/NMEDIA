@@ -1,6 +1,7 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,7 @@ class CardPostFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    )= CardPostFragmentBinding.inflate(inflater, container, false).also { binding ->
+    ) = CardPostFragmentBinding.inflate(inflater, container, false).also { binding ->
 
         val postId = arguments?.postId
         val post: Post? = viewModel.data.value?.find {
@@ -89,10 +90,22 @@ class CardPostFragment : Fragment() {
                         viewModel.shareById(currentPost)
                     }
                     videoBanner.setOnClickListener {
-                        viewModel.playVideoClicked(currentPost)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW, Uri.parse(
+                                (post
+                                    ?: return@setOnClickListener).video
+                            )
+                        )
+                        startActivity(intent)
                     }
                     playVideo.setOnClickListener {
-                        viewModel.playVideoClicked(currentPost)
+                        val intent = Intent(
+                            Intent.ACTION_VIEW, Uri.parse(
+                                (post
+                                    ?: return@setOnClickListener).video
+                            )
+                        )
+                        startActivity(intent)
                     }
                 }
             }
@@ -103,19 +116,19 @@ class CardPostFragment : Fragment() {
             findNavController().navigate(
                 R.id.action_feedFragment_to_cardPostFragment,
                 Bundle().apply {
-                    textArg = it
+                    textArg = it.toString()
                 })
         }
     }.root
 
-    companion object{
+    companion object {
         const val REQUEST_KEY = "requestKey"
         const val RESULT_KEY = "postForSaveContent"
-        private const val TEXT_KEY ="TEXT_KEY"
+        private const val TEXT_KEY = "TEXT_KEY"
         var Bundle.textArg: String?
             set(value) = putString(TEXT_KEY, value)
             get() = getString(TEXT_KEY)
-        private const val POST_ID_KEY ="POST_ID_KEY"
+        private const val POST_ID_KEY = "POST_ID_KEY"
         var Bundle.postId: Long
             set(value) = putLong(POST_ID_KEY, value)
             get() = getLong(POST_ID_KEY)

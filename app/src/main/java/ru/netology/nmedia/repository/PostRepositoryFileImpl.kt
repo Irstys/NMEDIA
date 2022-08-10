@@ -37,23 +37,22 @@ class PostRepositoryFileImpl(private val context: Context) : PostRepository {
             posts = listOf(
                 post.copy(
                     id = nextId++,
-                    author = "Me",
-                    likedByMe = false,
-                    published = "now"
+                    likedByMe = false
                 )
             ) + posts
             data.value = posts
             sync()
             return
+        } else {
+            posts = posts.map {
+                if (it.id != post.id) it else it.copy(content = post.content)
+            }
+            data.value = posts
+            sync()
         }
-
-        posts = posts.map {
-            if (it.id != post.id) it else it.copy(content = post.content)
-        }
-        data.value = posts
-        sync()
     }
 
+    fun get(): LiveData<List<Post>> = data
     override fun likeById(id: Long) {
         posts = posts.map {
             if (it.id != id) it else it.copy(
@@ -75,7 +74,8 @@ class PostRepositoryFileImpl(private val context: Context) : PostRepository {
         posts = posts.map { post ->
             if (post.id != id) post else post.copy(repost = post.repost + 1)
         }
-
+        data.value = posts
+        sync()
     }
 
     private fun sync() {
