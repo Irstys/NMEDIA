@@ -11,7 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.CardPostFragmentBinding
+import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
+import ru.netology.nmedia.databinding.FragmentCardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
 import ru.netology.nmedia.viewmodel.PostViewModel
@@ -25,113 +26,95 @@ class CardPostFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = CardPostFragmentBinding.inflate(inflater, container, false).also { binding ->
-
-        val postId = arguments?.postId
-        val post: Post? = viewModel.data.value?.find {
-            it.id == postId
-        }
-        val popupMenu by lazy {
-            PopupMenu(context, binding.postLayout.menu).apply {
-                inflate(R.menu.options_post)
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.remove -> {
-                            if (post != null) {
-                                viewModel.edit(post)
-                            }
-                            findNavController().navigateUp()
-                            true
-                        }
-                        R.id.edit -> {
-                            if (post != null) {
-                                viewModel.edit(post)
-                            }
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            }.show()
-        }
+    ): View {
+        val binding = FragmentCardPostBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+        val id = arguments?.idArg
 
         viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val currentPost = posts.find {
-                it.id == postId
-            }
-            with(binding.postLayout) {
-                if (currentPost != null) {
+            binding.postLayout.apply {
+                posts.map { post ->
+                    if (post.id.toInt() == id) {
+                        author.text = post.author
+                        published.text = post.published
+                        content.text = post.content
+                        views.text = numbersToString(post.views)
+                        like.isChecked = post.likedByMe
+                        like.text = numbersToString(post.likes)
+                        share.text = numbersToString(post.repost)
 
-                    author.text = currentPost.author
-                    published.text = currentPost.published
-                    content.text = currentPost.content
-                    views.text = numbersToString(currentPost.views)
-                    like.isChecked = currentPost.likedByMe
-                    like.text = numbersToString(currentPost.likes)
-                    share.text = numbersToString(currentPost.repost)
+                        if (!post.video.isNullOrEmpty()) {
+                            binding.postLayout.videoGroup.visibility = View.VISIBLE
+                        } else binding.postLayout.videoGroup.visibility = View.GONE
 
-                    if (!currentPost.video.isNullOrEmpty()) {
-                        videoGroup.visibility = View.VISIBLE
-                    } else videoGroup.visibility = View.GONE
-
-                    like.setOnClickListener {
-                        viewModel.likeById(currentPost.id)
-                    }
-                    share.setOnClickListener {
-                        val intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, currentPost.content)
-                            type = "text/plain"
+                        like.setOnClickListener {
+                            viewModel.likeById(post.id)
                         }
-                        val shareIntent =
-                            Intent.createChooser(intent, getString(R.string.chooser_share_post))
-                        startActivity(shareIntent)
-                        viewModel.shareById(currentPost)
-                    }
-                    videoBanner.setOnClickListener {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW, Uri.parse(
-                                (post
-                                    ?: return@setOnClickListener).video
-                            )
-                        )
-                        startActivity(intent)
-                    }
-                    playVideo.setOnClickListener {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW, Uri.parse(
-                                (post
-                                    ?: return@setOnClickListener).video
-                            )
-                        )
-                        startActivity(intent)
+                        share.setOnClickListener {
+                             val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, post.content)
+                                type = "text/plain"
+                            }
+                            val shareIntent =
+                                Intent.createChooser(intent, getString(R.string.chooser_share_post))
+                            startActivity(shareIntent)
+                            viewModel.shareById(post.id)
+                        }
+                        videoBanner.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+                            startActivity(intent)
+                        }
+                        playVideo.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+                            startActivity(intent)
+                        }
+                        menu.setOnClickListener {
+                            PopupMenu(it.context, it).apply {
+                                inflate(R.menu.options_post)
+
+                                setOnMenuItemClickListener { item ->
+                                    when (item.itemId) {
+                                        R.id.remove -> {
+                                            viewModel.removeById(post.id)
+                                            findNavController().navigateUp()
+                                            true
+                                        }
+                                        R.id.edit -> {
+                                            viewModel.edit(post)
+                                            findNavController().navigate(
+                                                R.id.action_cardPostFragment_to_editPostFragment,
+                                                Bundle().apply {
+                                                    textArg = post.content
+                                                }
+                                            )
+                                            true
+                                        }
+
+                                        else -> false
+                                    }
+                                }
+                            }.show()
+                        }
+
                     }
                 }
+
             }
-
         }
-        viewModel.navigateToPostContentScreenEvent.observe(viewLifecycleOwner) {
 
-            findNavController().navigate(
-                R.id.action_feedFragment_to_cardPostFragment,
-                Bundle().apply {
-                    textArg = it.toString()
-                })
-        }
-    }.root
+        return binding.root
+    }
+
 
     companion object {
-        const val REQUEST_KEY = "requestKey"
-        const val RESULT_KEY = "postForSaveContent"
         private const val TEXT_KEY = "TEXT_KEY"
         var Bundle.textArg: String?
             set(value) = putString(TEXT_KEY, value)
             get() = getString(TEXT_KEY)
-        private const val POST_ID_KEY = "POST_ID_KEY"
-        var Bundle.postId: Long
-            set(value) = putLong(POST_ID_KEY, value)
-            get() = getLong(POST_ID_KEY)
     }
 
 }

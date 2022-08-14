@@ -28,27 +28,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     //private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
 
-    val sharePostContent = SingleLiveEvent<String>()
-    val navigateToPostContentScreenEvent = SingleLiveEvent<Unit?>()
-    val navigateToEditPostContentScreenEvent = SingleLiveEvent<String?>()
-
-    val playVideo = SingleLiveEvent<String>()
-
-    val currentPost = MutableLiveData<Post?>(null)
-
     val edited: MutableLiveData<Post> = MutableLiveData(empty)
 
     fun likeById(id: Long) = repository.likeById(id)
     fun removeById(id: Long) = repository.removeById(id)
 
-    fun shareById(post: Post) {
-        sharePostContent.value = post.content
-        repository.shareById(post.id)
+    fun shareById(id: Long) {
+        repository.shareById(id)
     }
 
     fun edit(post: Post) {
         edited.value = post
-        navigateToEditPostContentScreenEvent.value = post.content
+        //navigateToEditPostContentScreenEvent.value = post.content
     }
 
     fun changeContent(content: String) {
@@ -59,43 +50,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun onSaveButtonClicked(content: String) {
-        if (content.isBlank()) return
-
-        val post = currentPost.value?.copy(
-            content = content
-        ) ?: Post(
-            id = PostRepository.NEW_POST_ID,
-            author = "Irina",
-            content = content,
-            published = "Date"
-        )
-        repository.save(post)
-        currentPost.value = null
+    fun saveContent() {
+        edited.value?.let {
+            repository.save(it)
+            edited.value = empty
+        }
     }
 
     fun save() {
         edited.value?.let {
             repository.save(it)
         }
-        edited.value = empty
     }
 
-    fun addPost() {
-        currentPost.value = null
-        navigateToPostContentScreenEvent.call()
-    }
-
-    // fun onCloseEditClicked() {
-    //      currentPost.value = null
-    //  }
-
-    fun playVideoClicked(post: Post) {
-        val url: String = requireNotNull(post.video) {
-            "Url must not be null"
-        }
-        playVideo.value = url
-
-    }
 }
 

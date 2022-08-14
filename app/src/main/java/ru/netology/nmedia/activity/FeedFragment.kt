@@ -7,7 +7,6 @@ import android.view.*
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
@@ -51,7 +50,7 @@ class FeedFragment : Fragment() {
                 val shareIntent =
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
-                viewModel.shareById(post)
+                viewModel.shareById(post.id)
             }
 
             override fun onRemoveListener(post: Post) {
@@ -61,7 +60,7 @@ class FeedFragment : Fragment() {
             override fun onEditListener(post: Post) {
                 viewModel.edit(post)
                 findNavController().navigate(
-                    R.id.action_feedFragment_to_postContentActivity,
+                    R.id.action_feedFragment_to_editPostFragment,
                     Bundle().apply {
                         textArg = post.content
                     }
@@ -69,11 +68,8 @@ class FeedFragment : Fragment() {
             }
 
             override fun onPlayVideoListener(post: Post) {
-                viewModel.playVideoClicked(post)
-            }
-
-            override fun onAddListener() {
-                viewModel.addPost()
+                val intentVideo = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+                startActivity(intentVideo)
             }
 
             override fun onPost(post: Post) {
@@ -94,35 +90,15 @@ class FeedFragment : Fragment() {
         }
 
         binding.addPost.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_postContentActivity)
+            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
 
-     /*   viewModel.edited.observe(viewLifecycleOwner) { (id) ->
-            if (id == 0L) {
-                return@observe
-            }
-            findNavController().navigate(R.id.action_feedFragment_to_postContentActivity)
-        }
-        viewModel.playVideo.observe(viewLifecycleOwner) { video ->
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(video))
-            startActivity(intent)
-        }*/
-        viewModel.navigateToPostContentScreenEvent.observe(viewLifecycleOwner) {
-            findNavController().navigate(R.id.action_feedFragment_to_cardPostFragment)
-        }
-        setFragmentResultListener(requestKey = CardPostFragment.REQUEST_KEY) { requestKey, bundle ->
-            if (requestKey != CardPostFragment.REQUEST_KEY) return@setFragmentResultListener
-            val newPostContent =
-                bundle.getString(CardPostFragment.RESULT_KEY) ?: return@setFragmentResultListener
-            viewModel.onSaveButtonClicked(newPostContent)
-        }
         return binding.root
     }
 
     companion object {
         var Bundle.idArg: Int by IntArg
     }
-
     object IntArg : ReadWriteProperty<Bundle, Int> {
         override fun getValue(thisRef: Bundle, property: KProperty<*>): Int {
             return thisRef.getInt(property.name)

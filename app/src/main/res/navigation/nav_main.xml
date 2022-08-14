@@ -11,39 +11,42 @@
         android:label="fragment_feed"
         tools:layout="@layout/fragment_feed" >
         <action
-            android:id="@+id/action_feedFragment_to_postContentActivity"
-            app:destination="@id/postContentActivity"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out"
-            app:popEnterAnim="@android:anim/fade_in"
-            app:popExitAnim="@android:anim/fade_out" />
-        <action
             android:id="@+id/action_feedFragment_to_cardPostFragment"
             app:destination="@id/cardPostFragment" />
         <action
+            android:id="@+id/action_feedFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment3" />
+        <action
             android:id="@+id/action_feedFragment_to_intentHandlerActivity"
             app:destination="@id/intentHandlerActivity" />
+        <action
+            android:id="@+id/action_feedFragment_to_newPostFragment"
+            app:destination="@id/newPostFragment" />
     </fragment>
     <fragment
-        android:id="@+id/postContentActivity"
-        android:name="ru.netology.nmedia.activity.PostContentActivity"
-        android:label="fragment_post_content"
-        tools:layout="@layout/fragment_post_content" />
-    <fragment
-        android:id="@+id/cardPostFragment"
-        android:name="ru.netology.nmedia.activity.CardPostFragment"
-        android:label="card_post_fragment"
-        tools:layout="@layout/card_post_fragment" >
-        <action
-            android:id="@+id/action_cardPostFragment_to_intentHandlerActivity"
-            app:destination="@id/intentHandlerActivity" />
-        <action
-            android:id="@+id/action_cardPostFragment_to_postContentActivity"
-            app:destination="@id/postContentActivity" />
-    </fragment>
+        android:id="@+id/newPostFragment"
+        android:name="ru.netology.nmedia.activity.NewPostFragment"
+        android:label="fragment_new_post"
+        tools:layout="@layout/fragment_new_post" />
     <activity
         android:id="@+id/intentHandlerActivity"
         android:name="ru.netology.nmedia.activity.IntentHandlerActivity"
         android:label="activity_intent_handler"
         tools:layout="@layout/activity_intent_handler" />
+    <fragment
+        android:id="@+id/editPostFragment3"
+        android:name="ru.netology.nmedia.activity.EditPostFragment"
+        android:label="fragment_edit_post"
+        tools:layout="@layout/fragment_edit_post" />
+    <fragment
+        android:id="@+id/cardPostFragment"
+        android:name="ru.netology.nmedia.activity.CardPostFragment"
+        android:label="CardPostFragment">
+        <action
+            android:id="@+id/action_cardPostFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment3" />
+        <action
+            android:id="@+id/action_cardPostFragment_to_intentHandlerActivity"
+            app:destination="@id/intentHandlerActivity" />
+    </fragment>
 </navigation>

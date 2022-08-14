@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.CardPostFragment.Companion.postId
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
@@ -21,7 +20,8 @@ interface OnInteractionListener {
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
     fun onPlayVideoListener(post: Post)
-    fun onAddListener()
+
+    //fun onAddListener()
     fun onPost(post: Post)
 }
 
@@ -45,7 +45,6 @@ class PostViewHolder(
     private val binding: CardPostBinding,
     private val listener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
-    private lateinit var post: Post
 
     fun bind(post: Post) {
         binding.apply {
@@ -79,21 +78,7 @@ class PostViewHolder(
             playVideo.setOnClickListener {
                 listener.onPlayVideoListener(post)
             }
-           /* content.setOnClickListener {
-                linkToPost(it, post.id)
-            }
-            avatar.setOnClickListener {
-                linkToPost(it, post.id)
-            }
-            published.setOnClickListener {
-                linkToPost(it, post.id)
-            }
-            author.setOnClickListener {
-                linkToPost(it, post.id)
-            }
-            content.setOnClickListener {
-                linkToPost(it, post.id)
-            }*/
+
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
@@ -114,18 +99,7 @@ class PostViewHolder(
                     }
                 }.show()
             }
-
-
         }
-
-    }
-
-    private fun linkToPost(view: View?, id: Long) {
-        view?.findNavController()?.navigate(
-            R.id.action_feedFragment_to_cardPostFragment,
-            Bundle().apply {
-                postId = id
-            })
     }
 }
 

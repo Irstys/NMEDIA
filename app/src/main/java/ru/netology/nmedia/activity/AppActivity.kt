@@ -15,35 +15,41 @@ import ru.netology.nmedia.databinding.ActivityAppBinding
 
 class AppActivity : AppCompatActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    private lateinit var binding: ActivityAppBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityAppBinding.inflate(layoutInflater)
+        binding = ActivityAppBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        handleIntent(intent)
+    }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
         intent?.let {
             if (intent.action != Intent.ACTION_SEND) {
                 return@let
             }
+            println("handleIntent: $intent")
             val text = intent.getStringExtra(Intent.EXTRA_TEXT)
-
             if (text.isNullOrBlank()) {
-                Snackbar.make(binding.root, "Content can't be empty", LENGTH_INDEFINITE)
+                Snackbar.make(binding.root, "Content can't be empty", Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok) {
                         finish()
                     }
                     .show()
                 return@let
             } else {
-                supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
-
                 findNavController(R.id.fragmentContainer).navigate(
-                    R.id.action_feedFragment_to_postContentActivity,
+                    R.id.action_feedFragment_to_newPostFragment,
                     Bundle().apply {
                         textArg = text
-                    }
-                )
+                    })
+
             }
         }
     }
