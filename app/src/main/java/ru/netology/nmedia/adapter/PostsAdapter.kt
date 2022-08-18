@@ -20,8 +20,6 @@ interface OnInteractionListener {
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
     fun onPlayVideoListener(post: Post)
-
-    //fun onAddListener()
     fun onPost(post: Post)
 }
 
@@ -48,7 +46,7 @@ class PostViewHolder(
 
     fun bind(post: Post) {
         binding.apply {
-            author.text = post.author
+                author.text = post.author
             published.text = post.published
             content.text = post.content
             views.text = numbersToString(post.views)

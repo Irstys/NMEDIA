@@ -5,40 +5,25 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import ru.netology.nmedia.dto.Post
 
+/*  ${PostColumns.COLUMN_AUTHOR_AVATAR} TEXT NOT NULL,*/
 class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
-    companion object {
-        val DDL = """
-        CREATE TABLE ${PostColumns.TABLE} (
-            ${PostColumns.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
-            ${PostColumns.COLUMN_AUTHOR} TEXT NOT NULL,
-            ${PostColumns.COLUMN_AUTHOR_AVATAR} TEXT NOT NULL,
-            ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
-            ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
-            ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
-            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0
-            ${PostColumns.COLUMN_REPOST} INTEGER NOT NULL DEFAULT 0
-            ${PostColumns.COLUMN_VIEWS} INTEGER NOT NULL DEFAULT 0
-            ${PostColumns.COLUMN_VIDEO} TEXT NOT NULL,
-        );
-        """.trimIndent()
-    }
-
     object PostColumns {
         const val TABLE = "posts"
         const val COLUMN_ID = "id"
         const val COLUMN_AUTHOR = "author"
-        const val COLUMN_AUTHOR_AVATAR = "author avatar"
+
+        // const val COLUMN_AUTHOR_AVATAR = "author avatar"
         const val COLUMN_CONTENT = "content"
         const val COLUMN_PUBLISHED = "published"
         const val COLUMN_LIKED_BY_ME = "likedByMe"
         const val COLUMN_LIKES = "likes"
         const val COLUMN_REPOST = "repost"
-        const val COLUMN_VIEWS = "likes"
+        const val COLUMN_VIEWS = "views"
         const val COLUMN_VIDEO = "video"
         val ALL_COLUMNS = arrayOf(
             COLUMN_ID,
             COLUMN_AUTHOR,
-            COLUMN_AUTHOR_AVATAR,
+            //    COLUMN_AUTHOR_AVATAR,
             COLUMN_CONTENT,
             COLUMN_PUBLISHED,
             COLUMN_LIKED_BY_ME,
@@ -69,9 +54,9 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
 
     override fun save(post: Post): Post {
         val values = ContentValues().apply {
-            if (post.id !== 0L) {
+        /*    if (post.id !== 0L) {
                 put(PostColumns.COLUMN_ID, post.id)
-            }
+            }*/
             put(PostColumns.COLUMN_AUTHOR, "Me")
             put(PostColumns.COLUMN_CONTENT, post.content)
             put(PostColumns.COLUMN_PUBLISHED, "now")
@@ -136,7 +121,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             return Post(
                 id = getLong(getColumnIndexOrThrow(PostColumns.COLUMN_ID)),
                 author = getString(getColumnIndexOrThrow(PostColumns.COLUMN_AUTHOR)),
-                authorAvatar = getString(getColumnIndexOrThrow(PostColumns.COLUMN_AUTHOR_AVATAR)),
+                //       authorAvatar = getString(getColumnIndexOrThrow(PostColumns.COLUMN_AUTHOR_AVATAR)),
                 content = getString(getColumnIndexOrThrow(PostColumns.COLUMN_CONTENT)),
                 published = getString(getColumnIndexOrThrow(PostColumns.COLUMN_PUBLISHED)),
                 likedByMe = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKED_BY_ME)) != 0,
@@ -146,5 +131,21 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
                 video = getString(getColumnIndexOrThrow(PostColumns.COLUMN_VIDEO)),
             )
         }
+    }
+
+    companion object {
+        val DDL = """
+        CREATE TABLE ${PostColumns.TABLE} (
+            ${PostColumns.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+            ${PostColumns.COLUMN_AUTHOR} TEXT NOT NULL,
+            ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
+            ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
+            ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_REPOST} INTEGER NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_VIEWS} INTEGER NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_VIDEO} TEXT 
+        );
+        """.trimIndent()
     }
 }

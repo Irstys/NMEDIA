@@ -1,6 +1,5 @@
 package ru.netology.nmedia.dao
 
-import androidx.lifecycle.LiveData
 import ru.netology.nmedia.dto.Post
 
 interface PostDao {

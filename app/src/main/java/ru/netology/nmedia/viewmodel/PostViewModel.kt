@@ -10,14 +10,14 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryFileImpl
 import ru.netology.nmedia.repository.PostRepositoryInMemoryImpl
 import ru.netology.nmedia.repository.PostRepositorySQLiteImpl
-import ru.netology.nmedia.util.SingleLiveEvent
 
 private val empty = Post(
     id = 0,
     content = "",
+    //  authorAvatar = "",
     author = "",
     likedByMe = false,
-    published = "",
+    published = "Once upon a time",
     likes = 0,
     repost = 0,
     views = 0
@@ -29,6 +29,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositorySQLiteImpl(
         AppDb.getInstance(application).postDao
     )
+
     //private val repository: PostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
 
@@ -61,6 +62,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun save() {
         edited.value?.let {
             repository.save(it)
+            edited.value = empty
         }
     }
 
