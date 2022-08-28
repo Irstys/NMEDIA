@@ -15,7 +15,7 @@ class IntentHandlerActivity : AppCompatActivity() {
         val binding = ActivityIntentHandlerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val intent=intent?.let {
+        intent?.let {
             if (it.action != Intent.ACTION_SEND) {
                 return@let
             }

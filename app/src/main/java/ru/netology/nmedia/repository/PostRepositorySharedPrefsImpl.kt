@@ -31,7 +31,7 @@ class PostRepositorySharedPrefsImpl(
 
     override fun getAll(): LiveData<List<Post>> = data
     override fun save(post: Post) {
-        if (post.id == PostRepository.NEW_POST_ID) insert(post) else update(post)
+        if (post.id == 0L) insert(post) else update(post)
         data.value = posts
         sync()
         return

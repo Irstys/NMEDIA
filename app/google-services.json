@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "245391796612",
+    "project_id": "netology-irstys",
+    "storage_bucket": "netology-irstys.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245391796612:android:e2d2dde898715797e955d1",
+        "android_client_info": {
+          "package_name": "ru.netology.nmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245391796612-ed2mj21smv4k9j61084vu9llr0dg2kl4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBXDLtt3EGfRagdBHPs51NZ8pS62RGQRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245391796612-ed2mj21smv4k9j61084vu9llr0dg2kl4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
