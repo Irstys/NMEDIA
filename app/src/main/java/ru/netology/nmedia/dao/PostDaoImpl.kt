@@ -54,7 +54,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
 
     override fun save(post: Post): Post {
         val values = ContentValues().apply {
-        /*    if (post.id !== 0L) {
+            /*    if (post.id !== 0L) {
                 put(PostColumns.COLUMN_ID, post.id)
             }*/
             put(PostColumns.COLUMN_AUTHOR, "Me")
