@@ -3,7 +3,7 @@ package ru.netology.nmedia.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.dto.Post
-
+val NEW_POST_ID=0L
 class PostRepositoryInMemoryImpl : PostRepository {
     private var nextId = 1L
     private var posts = listOf(
@@ -128,7 +128,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
     }
 
     override fun save(post: Post) {
-        if (post.id == PostRepository.NEW_POST_ID) insert(post) else update(post)
+        if (post.id == NEW_POST_ID) insert(post) else update(post)
         data.value = posts
         return
     }
