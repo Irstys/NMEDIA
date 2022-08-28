@@ -1,13 +1,14 @@
 package ru.netology.nmedia.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import ru.netology.nmedia.dto.Post
 
-@Entity
+@Entity(tableName = "posts")
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    @ColumnInfo(name ="id") val id: Long,
     val author: String,
     val content: String,
     val published: String,
