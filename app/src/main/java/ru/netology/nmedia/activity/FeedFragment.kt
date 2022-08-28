@@ -99,6 +99,7 @@ class FeedFragment : Fragment() {
     companion object {
         var Bundle.idArg: Int by IntArg
     }
+
     object IntArg : ReadWriteProperty<Bundle, Int> {
         override fun getValue(thisRef: Bundle, property: KProperty<*>): Int {
             return thisRef.getInt(property.name)
