@@ -14,4 +14,12 @@
     <string name="chooser_share_post">Поделиться</string>
     <string name="text">Текст</string>
     <string name="hello_blank_fragment">Приветсвую</string>
+    <string name="empty_content_error">Контент отсутствует</string>
+    <string name="channel_remote_name">Уведомление сервера</string>
+    <string name="channel_remote_description">Уведомления с удалённого сервера</string>
+    <string name="notification_user_liked">Пользователь %1$s поставил лайк посту %2$s</string>
+    <string name="notification_user_new_posted">%1$s опубликовал новый пост</string>
+    <string name="google_play_unavailable">Google API не доступен</string>
+    <string name="error_notification_title">Вы используете старую версию приложения</string>
+    <string name="error_notification_text">Пожалуйста, обновите приложение для корректной работы</string>
 </resources>
