@@ -26,8 +26,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.usesCleartextTraffic = false
+        }
+        debug {
+            manifestPlaceholders.usesCleartextTraffic = true
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -55,6 +60,7 @@ dependencies {
     def nav_version = "2.5.1"
     def room_version = "2.4.3"
     def firebase_version = "30.3.2"
+    def okhttp_version = "4.10.0"
     def play_services_base_version = "18.1.0"
 
     implementation "androidx.core:core-ktx:$core_version"
@@ -79,4 +85,5 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging-ktx"
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     implementation  'com.google.gms:google-services:4.3.13'
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 }
