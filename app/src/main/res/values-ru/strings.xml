@@ -22,4 +22,8 @@
     <string name="google_play_unavailable">Google API не доступен</string>
     <string name="error_notification_title">Вы используете старую версию приложения</string>
     <string name="error_notification_text">Пожалуйста, обновите приложение для корректной работы</string>
+    <string name="retry_loading">Повторить</string>
+    <string name="empty_posts">Постов нет.\\nЕсли создадите новый пост, то он появится здесь</string>
+    <string name="error_loading">Что-то пошло не так. Попробуйте позднее</string>
+    <string name="save">Сохранить</string>
 </resources>

@@ -42,7 +42,7 @@ class AppActivity : AppCompatActivity() {
             if (intent.action != Intent.ACTION_SEND) {
                 return@let
             }
-            println("handleIntent: $intent")
+
             val text = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (text.isNullOrBlank()) {
                 Snackbar.make(binding.root, "Content can't be empty", Snackbar.LENGTH_INDEFINITE)
@@ -60,7 +60,10 @@ class AppActivity : AppCompatActivity() {
 
             }
         }
+        checkGoogleApiAvailability()
+
     }
+
     private fun checkGoogleApiAvailability() {
         with(GoogleApiAvailability.getInstance()) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)

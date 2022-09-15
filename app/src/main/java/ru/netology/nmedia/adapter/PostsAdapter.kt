@@ -46,7 +46,7 @@ class PostViewHolder(
 
     fun bind(post: Post) {
         binding.apply {
-                author.text = post.author
+               author.text = post.author
             published.text = post.published
             content.text = post.content
             views.text = numbersToString(post.views)
