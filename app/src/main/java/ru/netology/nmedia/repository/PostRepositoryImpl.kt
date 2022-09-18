@@ -40,32 +40,27 @@ class PostRepositoryImpl : PostRepository {
         return posts
     }
 
-    override fun likeById(id: Long) {
-
-        val request: Request = Request.Builder()
-            .get()
-            .url("${BASE_URL}/api/slow/posts/$id")
-            .build()
-        val serverPost: Post =
-            client.newCall(request)
-                .execute()
-                .let { it.body?.string() ?: throw RuntimeException("body is null") }
-                .let {
-                    gson.fromJson(it, typeTokenPost.type)
-                }
-        val likedByMe: Boolean = !serverPost.likedByMe;
+    override fun liked(id: Long, likedByMe: Boolean):Post {
+        val isLiked: Boolean = !likedByMe;
         val likesUrl = "${BASE_URL}/api/posts/${id}/likes"
-        val requestLike: Request = if (likedByMe) {
+        val request: Request = if (isLiked) {
             Request.Builder()
-                .post(gson.toJson(serverPost).toRequestBody(jsonType))
+                .post(gson.toJson(id).toRequestBody(jsonType))
                 .url(likesUrl)
                 .build()
         } else {
             Request.Builder()
-                .delete(gson.toJson(serverPost).toRequestBody(jsonType))
+                .delete(gson.toJson(id).toRequestBody(jsonType))
                 .url(likesUrl)
                 .build()
         }
+        return client.newCall(request)
+            .execute()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, Post::class.java)
+            }
+
     }
 
     override fun shareById(id: Long) {

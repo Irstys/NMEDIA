@@ -3,7 +3,6 @@ package ru.netology.nmedia.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,7 @@ class FeedFragment : Fragment() {
         )
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLikeListener(post: Post) {
-                viewModel.likeById(post.id)
+                viewModel.likeById(post.id, post.likedByMe)
             }
 
             override fun onShareListener(post: Post) {
@@ -100,6 +99,7 @@ class FeedFragment : Fragment() {
     companion object {
         var Bundle.idArg: Int by IntArg
     }
+
     object IntArg : ReadWriteProperty<Bundle, Int> {
         override fun getValue(thisRef: Bundle, property: KProperty<*>): Int {
             return thisRef.getInt(property.name)
