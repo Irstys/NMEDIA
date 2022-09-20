@@ -56,7 +56,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long, likedByMe: Boolean) {
         thread {
-            repository.liked(id, likedByMe)
+            val newPost = repository.liked(id, likedByMe)
+            // Оптимистичная модель
+            val old = _data.value?.posts.orEmpty()
+            val posts = listOf(newPost)+old
+            _data.postValue(FeedModel(posts=posts))
         }
     }
 
@@ -87,8 +91,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun save() {
         edited.value?.let {
             repository.save(it)
-            edited.value = empty
-        }
+            _postCreated.postValue(Unit)
+         }
+        edited.value = empty
     }
 
     fun removeById(id: Long) {
