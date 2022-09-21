@@ -58,9 +58,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         thread {
             val newPost = repository.liked(id, likedByMe)
             // Оптимистичная модель
-            val old = _data.value?.posts.orEmpty()
-            val posts = listOf(newPost)+old
-            _data.postValue(FeedModel(posts=posts))
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                    .map {
+                        if(it.id != id) it
+                        else newPost
+                    }
+                )
+            )
         }
     }
 
