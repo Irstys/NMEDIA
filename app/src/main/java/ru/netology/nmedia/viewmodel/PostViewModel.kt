@@ -95,8 +95,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun save() {
         edited.value?.let {
-            repository.save(it)
-            _postCreated.postValue(Unit)
+            thread {
+                val newPost = repository.save(it)
+                val old = _data.value?.posts.orEmpty()
+                val posts = listOf(newPost) + old
+                _postCreated.postValue(Unit)
+            }
          }
         edited.value = empty
     }
