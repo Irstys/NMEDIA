@@ -11,7 +11,7 @@ data class PostEntity(
     @ColumnInfo(name ="id") val id: Long,
     val author: String,
     val content: String,
-    val published: String,
+    val published: Long,
     val likes: Int = 0,
     val likedByMe: Boolean,
     val repost: Int,

@@ -47,7 +47,7 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
             views.text = numbersToString(post.views)
             //         like.setImageResource(

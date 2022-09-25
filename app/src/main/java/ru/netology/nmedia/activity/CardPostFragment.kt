@@ -40,7 +40,7 @@ class CardPostFragment : Fragment() {
             with(binding.postLayout) {
                 if (post.id.toInt() == id) {
                     author.text = post.author
-                    published.text = post.published
+                    published.text = post.published.toString()
                     content.text = post.content
                     views.text = numbersToString(post.views)
                     like.isChecked = post.likedByMe
