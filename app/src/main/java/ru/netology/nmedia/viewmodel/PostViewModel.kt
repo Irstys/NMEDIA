@@ -30,7 +30,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
-    val edited = MutableLiveData(empty)
+    val edited: MutableLiveData<Post> = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
@@ -66,7 +66,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun shareById(id: Long) {
-        thread { repository.shareById(id) }
+        repository.shareById(id)
     }
 
     fun changeContent(content: String) {
