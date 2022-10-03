@@ -23,15 +23,9 @@ class PostRepositoryImpl : PostRepository {
                         return
                     }
 
-                    callback.onSuccess(response.body() ?: run {
-                        callback.onError(
-                            RuntimeException(
-                                response.message() + response.code().toString()
-                            )
-                        )
-                        return
-                    })
+                    callback.onSuccess(response.body() ?: throw RuntimeException("body is null"))
                 }
+
 
                 override fun onFailure(call: Call<List<Post>>, t: Throwable) {
                     callback.onError(RuntimeException(t))
