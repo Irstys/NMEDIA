@@ -64,7 +64,9 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-
+            override fun onImage(post: Post) {
+                findNavController().navigate(R.id.action_feedFragment_to_imageFragment, Bundle(). apply { textArg = post.attachment?.url })
+            }
             override fun onPlayVideoListener(post: Post) {
                 val intentVideo = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                 startActivity(intentVideo)

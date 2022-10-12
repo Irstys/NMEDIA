@@ -7,15 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.EditPostFragment.Companion.textArg
 import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
 import ru.netology.nmedia.databinding.FragmentCardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
+import ru.netology.nmedia.view.loadCircleCrop
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class CardPostFragment : Fragment() {
@@ -46,6 +50,29 @@ class CardPostFragment : Fragment() {
                     like.isChecked = post.likedByMe
                     like.text = numbersToString(post.likes)
                     share.text = numbersToString(post.repost)
+                    attachment.visibility = View.GONE
+
+                    val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+                    Glide.with(avatar)
+                        .load(url)
+                        .placeholder(R.drawable.ic_loading_24)
+                        .error(R.drawable.ic_baseline_error_outline_24)
+                        .timeout(10_000)
+                        .circleCrop()
+                        .into(avatar)
+
+                    val urlAttachment = "http://10.0.2.2:9999/images/${post.attachment?.url}"
+                    if (post.attachment != null) {
+                        Glide.with(attachment.context)
+                            .load(urlAttachment)
+                            .placeholder(R.drawable.ic_loading_24)
+                            .error(R.drawable.ic_baseline_error_outline_24)
+                            .timeout(10_000)
+                            .into(attachment)
+                        attachment.isVisible = true
+                    } else {
+                        attachment.isVisible = false
+                    }
 
                     if (!post.video.isNullOrEmpty()) {
                         binding.postLayout.videoGroup.visibility = View.VISIBLE
