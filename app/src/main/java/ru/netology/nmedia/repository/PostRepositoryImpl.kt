@@ -113,7 +113,7 @@ class PostRepositoryImpl : PostRepository {
         client.newCall(request)
             .enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(Post(0, "", "", 0L, false))
+                    callback.onSuccess(Post(0, "", "","", 0L, false))
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
