@@ -29,7 +29,7 @@ interface PostDao {
                 WHERE id = :id AND likedByMe=:likedByMe
                 """
     )
-    fun likeById(id: Long,likedByMe: Boolean)
+    fun likeById(id: Long, likedByMe: Boolean)
 
     @Query(
         """
