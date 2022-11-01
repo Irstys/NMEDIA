@@ -97,7 +97,7 @@ class PostRepositoryImpl : PostRepository {
             .close()
     }*/
 
-    override fun removeByIdAsync(id: Long, callback: PostRepository.Callback<Post>) {
+    override fun removeByIdAsync(id: Long, callback: PostRepository.Callback<Unit>) {
         try {
             PostsApi.retrofitService.removeById(id)
                 .enqueue(object : Callback<Unit> {
