@@ -9,10 +9,10 @@ interface PostRepository {
 
     fun shareById(id: Long)
     fun saveAsync(post: Post, callback: Callback<Post>)
-    fun removeByIdAsync(id: Long, callback: Callback<Post>)
+    fun removeByIdAsync(id: Long, callback: Callback<Unit>)
 
     interface Callback<T> {
-        fun onSuccess(posts: Post) {}
+        fun onSuccess(posts: T) {}
         fun onError(e: Exception) {}
     }
 }
