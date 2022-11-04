@@ -10,12 +10,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.RetryTypes
+import ru.netology.nmedia.util.RetryTypes.*
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -82,19 +85,47 @@ class FeedFragment : Fragment() {
             }
         })
         binding.list.adapter = adapter
+
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
-            binding.progress.isVisible = state.loading
-            binding.errorGroup.isVisible = state.error
             binding.emptyText.isVisible = state.empty
+        }
+
+        viewModel.dataState.observe(viewLifecycleOwner) { state ->
+            binding.progress.isVisible = state.loading
+            binding.swipeRefresh.isRefreshing = state.refreshing
+            binding.errorGroup.isVisible = state.error
+            if (state.error) {
+                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.retry_loading) {
+                        when (state.retryType) {
+                            LIKE -> viewModel.likeById(state.retryId, false)
+                            UNLIKE -> viewModel.likeById(state.retryId, true)
+                            SAVE -> viewModel.retrySave(state.retryPost)
+                            REMOVE -> viewModel.removeById(state.retryId)
+                            else -> viewModel.loadPosts()
+                        }
+                    }
+                    .show()
+            }
+        }
+
+
+        binding.retryButton.setOnClickListener {
+            viewModel.loadPosts()
         }
 
         binding.addPost.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
-        binding.retryButton.setOnClickListener {
+        binding.swipeRefresh.setColorSchemeResources(
+            android.R.color.holo_blue_dark
+        )
+
+        binding.swipeRefresh.setOnRefreshListener {
             viewModel.loadPosts()
         }
+
         return binding.root
     }
 

@@ -7,7 +7,7 @@ import ru.netology.nmedia.entity.PostEntity
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [PostEntity::class], version = 1)
+@Database(entities = [PostEntity::class], version = 1, exportSchema = false)
 abstract class AppDb : RoomDatabase() {
     abstract fun postDao(): PostDao
 
@@ -22,9 +22,10 @@ abstract class AppDb : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context) = Room.databaseBuilder(
-            context, AppDb::class.java, "app.db")
+            context, AppDb::class.java, "app.db"
+        )
             .fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
+            //   .allowMainThreadQueries()
             .build()
     }
 }

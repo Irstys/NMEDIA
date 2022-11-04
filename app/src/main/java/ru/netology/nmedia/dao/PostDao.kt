@@ -3,6 +3,7 @@ package ru.netology.nmedia.dao
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.netology.nmedia.entity.PostEntity
 
@@ -12,14 +13,17 @@ interface PostDao {
     @Query("SELECT * FROM posts ORDER BY id DESC")
     fun getAll(): LiveData<List<PostEntity>>
 
-    @Insert
-    fun insert(post: PostEntity)
+    @Query("SELECT COUNT(*) == 0 FROM posts")
+    suspend fun isEmpty(): Boolean
 
-    @Insert
-    fun insert(posts: List<PostEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(post: PostEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(posts: List<PostEntity>)
 
     @Query("UPDATE posts SET content = :content WHERE id = :id")
-    fun updateContentById(id: Long, content: String)
+    suspend fun updateContentById(id: Long, content: String)
 
     @Query(
         """
@@ -29,7 +33,7 @@ interface PostDao {
                 WHERE id = :id AND likedByMe=:likedByMe
                 """
     )
-    fun likeById(id: Long, likedByMe: Boolean)
+    suspend fun likeById(id: Long, likedByMe: Boolean)
 
     @Query(
         """
@@ -41,9 +45,9 @@ interface PostDao {
     fun shareById(id: Long)
 
     @Query("DELETE FROM posts WHERE id = :id")
-    fun removeById(id: Long)
+    suspend fun removeById(id: Long)
 
-    fun save(post: PostEntity) =
+    suspend fun save(post: PostEntity) =
         if (post.id == 0L) insert(post) else updateContentById(post.id, post.content)
 }
 /*interface PostDao {
