@@ -1,6 +1,5 @@
 package ru.netology.nmedia.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,7 +10,7 @@ import ru.netology.nmedia.enumeration.AttachmentType
 @Entity(tableName = "posts")
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Long,
+    var id: Long,
     val author: String,
     val authorAvatar: String,
     val content: String,
@@ -24,7 +23,7 @@ data class PostEntity(
     val views: Int = 0,
     val video: String? = null,
 
-) {
+    ) {
     fun toDto() = Post(
         id,
         author,
@@ -38,7 +37,7 @@ data class PostEntity(
         views,
         video,
 
-    )
+        )
 
     companion object {
         fun fromDto(dto: Post) =
@@ -55,22 +54,22 @@ data class PostEntity(
                 dto.views,
                 dto.video,
 
-            )
+                )
 
     }
 }
 
 data class AttachmentEmbeddable(
     var url: String,
-    var description: String?,
+    // var description: String?,
     var type: AttachmentType,
 ) {
-    fun toDto() = Attachment(url, description, type)
+    fun toDto() = Attachment(url,type)
 
 
     companion object {
         fun fromDto(dto: Attachment?) = dto?.let {
-            AttachmentEmbeddable(it.url, it.description, it.type)
+            AttachmentEmbeddable(it.url,it.type)
         }
     }
 }

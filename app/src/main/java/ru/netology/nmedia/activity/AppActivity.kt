@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.common.ConnectionResult
@@ -23,9 +24,9 @@ class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+        /* FirebaseMessaging.getInstance().token.addOnSuccessListener {
             println("current token: $it")
-        }
+        }*/
 
         binding = ActivityAppBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -60,6 +61,8 @@ class AppActivity : AppCompatActivity() {
 
             }
         }
+        lifecycleScope
+
         checkGoogleApiAvailability()
 
     }
