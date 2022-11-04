@@ -24,7 +24,8 @@ private val empty = Post(
     published = 221220L,
     likes = 0,
     repost = 0,
-    views = 0
+    views = 0,
+    video =""
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
