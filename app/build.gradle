@@ -47,7 +47,7 @@ android {
 
 def core_version = "1.9.0"
 def appcompat_version = "1.5.1"
-def mdc_version = "1.7.0"
+def mdc_version = "1.6.1"
 def constraintlayout_version = "2.1.4"
 def activity_version = "1.6.1"
 def fragment_version = "1.5.3"
