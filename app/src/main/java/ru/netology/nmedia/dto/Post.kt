@@ -9,6 +9,7 @@ data class Post(
     val likedByMe: Boolean,
     val likes: Int = 0,
     val attachment: Attachment? = null,
+    val viewed: Boolean = false,
     val repost: Int = 0,
     val views: Int=0,
     val video: String? = null,
@@ -17,5 +18,6 @@ data class Post(
 
 data class Attachment(
     val url: String,
+    val description: String?,
     val type: AttachmentType,
 )

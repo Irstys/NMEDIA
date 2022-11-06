@@ -1,6 +1,6 @@
 package ru.netology.nmedia.dao
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -13,10 +13,16 @@ import ru.netology.nmedia.entity.PostEntity
 interface PostDao {
 
     @Query("SELECT * FROM posts ORDER BY id DESC")
-    fun getAll(): LiveData<List<PostEntity>>
+    fun getAll(): Flow<List<PostEntity>>
 
     @Query("SELECT COUNT(*) == 0 FROM posts")
     suspend fun isEmpty(): Boolean
+
+    @Query("UPDATE posts SET viewed = 1 WHERE viewed = 0")
+    suspend fun markRead()
+
+    @Query("SELECT COUNT(*) FROM posts")
+    suspend fun count(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity)
@@ -51,11 +57,7 @@ interface PostDao {
 
     suspend fun save(post: PostEntity) =
         if (post.id == 0L) insert(post) else updateContentById(post.id, post.content)
+
+    @Query("UPDATE posts SET viewed = 1 WHERE viewed = 0")
+    suspend fun viewedPosts()
 }
-/*interface PostDao {
-    fun getAll(): List<Post>
-    fun likeById(id: Long)
-    fun shareById(id: Long)
-    fun removeById(id: Long)
-    fun save(post: Post): Post
-}*/

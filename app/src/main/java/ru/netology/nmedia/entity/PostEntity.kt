@@ -19,6 +19,7 @@ data class PostEntity(
     val likes: Int = 0,
     @Embedded
     var attachment: AttachmentEmbeddable?,
+    val viewed: Boolean = false,
     val repost: Int = 0,
     val views: Int = 0,
     val video: String? = null,
@@ -33,6 +34,7 @@ data class PostEntity(
         likedByMe,
         likes,
         attachment?.toDto(),
+        viewed,
         repost,
         views,
         video,
@@ -50,6 +52,7 @@ data class PostEntity(
                 dto.likedByMe,
                 dto.likes,
                 AttachmentEmbeddable.fromDto(dto.attachment),
+                dto.viewed,
                 dto.repost,
                 dto.views,
                 dto.video,
@@ -61,15 +64,15 @@ data class PostEntity(
 
 data class AttachmentEmbeddable(
     var url: String,
-    // var description: String?,
+    var description: String?,
     var type: AttachmentType,
 ) {
-    fun toDto() = Attachment(url,type)
+    fun toDto() = Attachment(url, description, type)
 
 
     companion object {
         fun fromDto(dto: Attachment?) = dto?.let {
-            AttachmentEmbeddable(it.url,it.type)
+            AttachmentEmbeddable(it.url,it.description,it.type)
         }
     }
 }
