@@ -2,7 +2,8 @@ package ru.netology.nmedia.activity
 
 import android.app.Activity
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
+import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
