@@ -1,9 +1,9 @@
 package ru.netology.nmedia.entity
 
+import Attachment
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 
@@ -64,15 +64,15 @@ data class PostEntity(
 
 data class AttachmentEmbeddable(
     var url: String,
-    var description: String?,
+    //var description: String?,
     var type: AttachmentType,
 ) {
-    fun toDto() = Attachment(url, description, type)
+    fun toDto() = Attachment(url, type)
 
 
     companion object {
         fun fromDto(dto: Attachment?) = dto?.let {
-            AttachmentEmbeddable(it.url,it.description,it.type)
+            AttachmentEmbeddable(it.url,it.type)
         }
     }
 }

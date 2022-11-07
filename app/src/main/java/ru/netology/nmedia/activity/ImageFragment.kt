@@ -4,30 +4,43 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.inflate
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.FragmentImageBinding
 
 class ImageFragment : Fragment() {
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        val attachmentUrl = arguments?.textArg
+        val attachmentUrl = arguments?.getString("image")
         val binding = FragmentImageBinding.inflate(inflater, container, false)
-        val url = "http://10.0.2.2:9999/media/$attachmentUrl"
+        binding.apply {
+            imageAttachmentFullScreen.visibility = View.GONE
+            attachmentUrl?.let {
+                val url = "${BASE_URL}/media/${it}"
 
-        Glide.with(this)
-            .load(url)
-            .timeout(10_000)
-            .into(binding.imageAttachmentFullScreen)
 
+                Glide.with(imageAttachmentFullScreen)
+                    .load(url)
+                    .placeholder(R.drawable.ic_loading_24)
+                    .error(R.drawable.ic_baseline_error_outline_24)
+                    .timeout(10_000)
+                    .into(imageAttachmentFullScreen)
+            }
+            imageAttachmentFullScreen.visibility = View.VISIBLE
+        }
+
+        binding.imageAttachmentFullScreen.setOnClickListener {
+            findNavController().popBackStack()
+        }
         return binding.root
     }
-
 }
+

@@ -24,10 +24,6 @@ class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /* FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            println("current token: $it")
-        }*/
-
         binding = ActivityAppBinding.inflate(layoutInflater)
         setContentView(binding.root)
         handleIntent(intent)

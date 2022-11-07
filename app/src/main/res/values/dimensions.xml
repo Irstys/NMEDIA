@@ -4,7 +4,10 @@
     <dimen name="margin">16dp</dimen>
     <dimen name="marginStart">16dp</dimen>
     <dimen name="marginEnd">8dp</dimen>
+    <dimen name="commonSpacingMedium">8dp</dimen>
     <dimen name="iconButtonMinSize">48dp</dimen>
-    <dimen name="commonSpacing">16dp</dimen>
+    <dimen name="commonSpacingLarge">16dp</dimen>
     <dimen name="textSpacing">8dp</dimen>
+    <dimen name="commonSpacingSmall">4dp</dimen>
+    <dimen name="editTextSize">12sp</dimen>
 </resources>

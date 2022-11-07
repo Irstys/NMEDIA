@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
-import ru.netology.nmedia.view.load
 
 interface OnInteractionListener {
     fun onLikeListener(post: Post) {}
@@ -21,8 +21,8 @@ interface OnInteractionListener {
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
     fun onPlayVideoListener(post: Post) {}
-    fun onPost(post: Post) {}
-    fun onImage(post: Post) {}
+    fun onPostListner(post: Post) {}
+    fun onImageListner(image: String) {}
 }
 
 class PostsAdapter(
@@ -49,7 +49,7 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
 
-            author.text =post.author
+            author.text = post.author
 
             published.text = post.published.toString()
             content.text = post.content
@@ -65,7 +65,7 @@ class PostViewHolder(
                 .circleCrop()
                 .into(avatar)
 
-            val urlAttachment = "http://10.0.2.2:9999/images/${post.attachment?.url}"
+            val urlAttachment = "${BASE_URL}/media/${post.attachment?.url}"
             if (post.attachment != null) {
                 Glide.with(attachment.context)
                     .load(urlAttachment)
@@ -88,9 +88,9 @@ class PostViewHolder(
             share.setOnClickListener {
                 listener.onShareListener(post)
             }
-            thisPost.setOnClickListener { listener.onPost(post) }
+            thisPost.setOnClickListener { listener.onPostListner(post) }
 
-            if (post.video == null) {
+            /* if (post.video == null) {
                 binding.videoGroup.visibility = View.GONE
             } else {
                 binding.videoGroup.visibility = View.VISIBLE
@@ -100,32 +100,37 @@ class PostViewHolder(
             }
             playVideo.setOnClickListener {
                 listener.onPlayVideoListener(post)
-            }
+            }*/
+            attachment.setOnClickListener {
+                post.attachment?.let { attach ->
+                    listener.onImageListner(attach.url)
+                }
 
-            menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.options_post)
+                menu.setOnClickListener {
+                    PopupMenu(it.context, it).apply {
+                        inflate(R.menu.options_post)
 
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                listener.onRemoveListener(post)
-                                true
+                        setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.remove -> {
+                                    listener.onRemoveListener(post)
+                                    true
+                                }
+                                R.id.edit -> {
+                                    listener.onEditListener(post)
+                                    true
+                                }
+
+                                else -> false
                             }
-                            R.id.edit -> {
-                                listener.onEditListener(post)
-                                true
-                            }
-
-                            else -> false
                         }
-                    }
-                }.show()
+                    }.show()
+
+                }
             }
         }
     }
 }
-
 class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.id == newItem.id

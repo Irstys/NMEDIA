@@ -67,7 +67,7 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-            override fun onImage(post: Post) {
+            override fun onImageListner(post: Post) {
                 findNavController().navigate(R.id.action_feedFragment_to_imageFragment, Bundle(). apply { textArg = post.attachment?.url })
             }
             override fun onPlayVideoListener(post: Post) {
@@ -75,7 +75,7 @@ class FeedFragment : Fragment() {
                 startActivity(intentVideo)
             }
 
-            override fun onPost(post: Post) {
+            override fun onPostListner(post: Post) {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_cardPostFragment,
                     Bundle().apply {

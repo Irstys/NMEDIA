@@ -1,6 +1,7 @@
 package ru.netology.nmedia.api
 
 import androidx.room.Query
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -8,6 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import ru.netology.nmedia.BuildConfig
+import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import java.util.concurrent.TimeUnit
 
@@ -55,12 +57,20 @@ interface PostsApiService {
     )
     suspend fun likeById(@Path("id") id: Long,@Path("likedByMe") likedByMe: Boolean): Response<Post>
 
+    @Multipart
+    @POST("media")
+    suspend fun uploadPhoto(
+        @Part part: MultipartBody.Part,
+        @Part content: MultipartBody.Part,
+    ): Response<Media>
+}
+
    /* @POST("posts/{id}/likes")
     suspend fun likeById(@Path("id") id: Long): Response<Post>
 
     @DELETE("posts/{id}/likes")
     suspend fun dislikeById(@Path("id") id: Long): Response<Post>*/
-}
+
 
 object PostsApi {
     val retrofitService: PostsApiService by lazy {
