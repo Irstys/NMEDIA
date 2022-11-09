@@ -1,7 +1,7 @@
 package ru.netology.nmedia.activity
 
+
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +17,6 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.util.RetryTypes
 import ru.netology.nmedia.util.RetryTypes.*
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
@@ -67,13 +66,19 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-            override fun onImageListner(post: Post) {
-                findNavController().navigate(R.id.action_feedFragment_to_imageFragment, Bundle(). apply { textArg = post.attachment?.url })
+
+            override fun onImageListner(image: String) {
+                val bundle = Bundle().apply {
+                    putString("image", image)
+                }
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_imageFragment, bundle
+                )
             }
-            override fun onPlayVideoListener(post: Post) {
+           /* override fun onPlayVideoListener(post: Post) {
                 val intentVideo = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                 startActivity(intentVideo)
-            }
+            }*/
 
             override fun onPostListner(post: Post) {
                 findNavController().navigate(

@@ -1,7 +1,6 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.EditPostFragment.Companion.textArg
 import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
 import ru.netology.nmedia.databinding.FragmentCardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
-import ru.netology.nmedia.view.loadCircleCrop
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class CardPostFragment : Fragment() {
@@ -74,9 +70,9 @@ class CardPostFragment : Fragment() {
                         attachment.isVisible = false
                     }
 
-                    if (!post.video.isNullOrEmpty()) {
+                  /*  if (!post.video.isNullOrEmpty()) {
                         binding.postLayout.videoGroup.visibility = View.VISIBLE
-                    } else binding.postLayout.videoGroup.visibility = View.GONE
+                    } else binding.postLayout.videoGroup.visibility = View.GONE*/
 
                     like.setOnClickListener {
                         viewModel.likeById(post.id, post.likedByMe)
@@ -92,14 +88,14 @@ class CardPostFragment : Fragment() {
                         startActivity(shareIntent)
                         viewModel.shareById(post.id)
                     }
-                    videoBanner.setOnClickListener {
+                    /*videoBanner.setOnClickListener {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                         startActivity(intent)
                     }
                     playVideo.setOnClickListener {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                         startActivity(intent)
-                    }
+                    }*/
                     menu.setOnClickListener {
                         PopupMenu(it.context, it).apply {
                             inflate(R.menu.options_post)

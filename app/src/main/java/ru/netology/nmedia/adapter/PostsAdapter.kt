@@ -20,7 +20,7 @@ interface OnInteractionListener {
     fun onShareListener(post: Post) {}
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
-    fun onPlayVideoListener(post: Post) {}
+  //  fun onPlayVideoListener(post: Post) {}
     fun onPostListner(post: Post) {}
     fun onImageListner(image: String) {}
 }
