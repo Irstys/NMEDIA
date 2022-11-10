@@ -32,4 +32,8 @@
     <string name="description_select_photo">Выбрать фото</string>
     <string name="description_take_photo">Сделать фото</string>
     <string name="description_photo">Фото</string>
+    <string name="description_post_attachment">Вложение</string>
+    <string name="post_input_text_hint">Введите текст</string>
+    <string name="description_pick_photo">Выберите изображение</string>
+    <string name="description_image_full_screen">Полноэкранный режим</string>
 </resources>

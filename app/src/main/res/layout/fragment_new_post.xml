@@ -24,7 +24,7 @@
                 android:hint="@string/post_input_text_hint"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
-                android:padding="@dimen/common_spacing_medium"
+                android:padding="@dimen/commonSpacingMedium"
                 tools:ignore="MissingConstraints"
                 tools:text="@tools:sample/lorem[50]" />
 
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
             android:contentDescription="@string/description_pick_photo"
-            android:padding="@dimen/common_spacing_medium"
+            android:padding="@dimen/commonSpacingMedium"
             android:src="@drawable/ic_attach_file_48" />
 
 
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
             android:contentDescription="@string/description_take_photo"
-            android:padding="@dimen/common_spacing_medium"
+            android:padding="@dimen/commonSpacingMedium"
             android:src="@drawable/ic_baseline_photo_camera_48" />
 
     </LinearLayout>

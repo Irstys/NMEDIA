@@ -11,7 +11,7 @@
     android:layout_height="wrap_content"
     android:id="@+id/thisPost"
     app:navGraph="@navigation/nav_main"
-    android:padding="@dimen/common_spacing_large">
+    android:padding="@dimen/commonSpacingLarge">
 
     <ImageView
         android:id="@+id/avatar"
