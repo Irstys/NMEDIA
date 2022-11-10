@@ -1,10 +1,12 @@
 package ru.netology.nmedia.entity
 
-import Attachment
+
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
+
 
 @Entity(tableName = "posts")
 data class PostEntity(

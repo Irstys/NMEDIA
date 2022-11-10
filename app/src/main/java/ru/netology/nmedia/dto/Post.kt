@@ -1,6 +1,8 @@
 package ru.netology.nmedia.dto
-import Attachment
+
 import ru.netology.nmedia.enumeration.AttachmentType
+
+
 data class Post(
     val id: Long,
     val author: String,
@@ -15,5 +17,19 @@ data class Post(
     val views: Int=0,
     val video: String? = null,
 
-)
+    )
+
+data class Attachment(
+    val url: String,
+    //val description: String? = null,
+    val type: AttachmentType,
+) {
+    fun toDto() = Attachment(url, type)
+
+    companion object {
+        fun fromDto(dto: Attachment?) = dto?.let {
+            Attachment(it.url, it.type)
+        }
+    }
+}
 
