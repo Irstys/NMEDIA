@@ -79,7 +79,7 @@ class PostViewHolder(
                 }.show()
             }
 
-            val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+            val url = "${BASE_URL}/avatars/${post.authorAvatar}"
             Glide.with(itemView)
                 .load(url)
                 .placeholder(R.drawable.ic_loading_24)
