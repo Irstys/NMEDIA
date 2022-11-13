@@ -16,12 +16,14 @@ import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
 import ru.netology.nmedia.databinding.FragmentCardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class CardPostFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
+    private val viewModelAuth: AuthViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,12 +72,16 @@ class CardPostFragment : Fragment() {
                         attachment.isVisible = false
                     }
 
-                  /*  if (!post.video.isNullOrEmpty()) {
+                    /*  if (!post.video.isNullOrEmpty()) {
                         binding.postLayout.videoGroup.visibility = View.VISIBLE
                     } else binding.postLayout.videoGroup.visibility = View.GONE*/
 
                     like.setOnClickListener {
-                        viewModel.likeById(post.id, post.likedByMe)
+                        if (viewModelAuth.authenticated) {
+                            viewModel.likeById(post.id, post.likedByMe)
+                        } else {
+                            authenticate()
+                        }
                     }
                     share.setOnClickListener {
                         val intent = Intent().apply {
@@ -103,20 +109,31 @@ class CardPostFragment : Fragment() {
                             setOnMenuItemClickListener { item ->
                                 when (item.itemId) {
                                     R.id.remove -> {
-                                        viewModel.removeById(post.id)
-                                        findNavController().navigateUp()
+                                        if (viewModelAuth.authenticated) {
+                                            viewModel.removeById(post.id)
+                                            findNavController().navigateUp()
+
+                                        } else {
+                                            authenticate()
+                                        }
                                         true
                                     }
                                     R.id.edit -> {
-                                        viewModel.edit(post)
-                                        findNavController().navigate(
-                                            R.id.action_cardPostFragment_to_editPostFragment,
-                                            Bundle().apply {
-                                                textArg = post.content
-                                            }
-                                        )
+                                        if (viewModelAuth.authenticated) {
+                                            viewModel.edit(post)
+                                            findNavController().navigate(
+                                                R.id.action_cardPostFragment_to_editPostFragment,
+                                                Bundle().apply {
+                                                    textArg = post.content
+                                                }
+                                            )
+
+                                        } else {
+                                            authenticate()
+                                        }
                                         true
                                     }
+
 
                                     else -> false
                                 }
@@ -131,6 +148,7 @@ class CardPostFragment : Fragment() {
         return binding.root
     }
 
+    private fun authenticate() = findNavController().navigate(R.id.action_cardPostFragment_to_signInFragment)
 
     companion object {
 
