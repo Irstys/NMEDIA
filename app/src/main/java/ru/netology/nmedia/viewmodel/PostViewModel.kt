@@ -7,9 +7,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
@@ -27,13 +29,14 @@ private val empty = Post(
     content = "",
     authorAvatar = "",
     author = "",
+    authorId = 0,
     likedByMe = false,
     published = 221220L,
     likes = 0,
     viewed = false,
     repost = 0,
     views = 0,
-    video =""
+    video = ""
 )
 private val noPhoto = PhotoModel()
 
@@ -42,9 +45,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = repository.data
-        .map { FeedModel(it, it.isEmpty()) }
-        .asLiveData(Dispatchers.Default)
+    val data: LiveData<FeedModel> = AppAuth.getInstance()
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.data
+                .map { posts ->
+                    FeedModel(
+                        posts.map { it.copy(ownedByMe = it.authorId == myId) },
+                        posts.isEmpty()
+                    )
+                }
+        }.asLiveData(Dispatchers.Default)
 
     private val _dataState = MutableLiveData(FeedModelState())
     val dataState: LiveData<FeedModelState>
@@ -71,7 +82,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         loadPosts()
     }
 
-    fun loadPosts()  = viewModelScope.launch {
+    fun loadPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)
             repository.getAll()
@@ -81,12 +92,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun likeById(id: Long, likedByMe: Boolean)  = viewModelScope.launch {
+    fun likeById(id: Long, likedByMe: Boolean) = viewModelScope.launch {
         try {
             repository.likeById(id, likedByMe)
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true, retryType = RetryTypes.REMOVE, retryId = id)
+            _dataState.value =
+                FeedModelState(error = true, retryType = RetryTypes.REMOVE, retryId = id)
         }
     }
 
@@ -118,7 +130,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             _postCreated.value = Unit
             viewModelScope.launch {
                 try {
-                    when(_photo.value) {
+                    when (_photo.value) {
                         noPhoto -> repository.save(it)
                         else -> _photo.value?.file?.let { file ->
                             repository.saveWithAttachment(it, MediaUpload(file))
@@ -159,18 +171,22 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             null
         }
     }
+
     fun removeById(id: Long) = viewModelScope.launch {
         try {
             repository.removeById(id)
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true, retryType = RetryTypes.REMOVE, retryId = id)
+            _dataState.value =
+                FeedModelState(error = true, retryType = RetryTypes.REMOVE, retryId = id)
         }
     }
+
     override fun onCleared() {
         super.onCleared()
         scope.cancel()
     }
+
     fun loadNewPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)

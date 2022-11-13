@@ -18,13 +18,16 @@ import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.RetryTypes.*
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 class FeedFragment : Fragment() {
 
-    internal val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+
+    private val viewModelAuth: AuthViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +41,11 @@ class FeedFragment : Fragment() {
         )
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLikeListener(post: Post) {
+                if (viewModelAuth.authenticated) {
                 viewModel.likeById(post.id, post.likedByMe)
+                } else {
+                    authenticate()
+                }
             }
 
             override fun onShareListener(post: Post) {
@@ -54,17 +61,25 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRemoveListener(post: Post) {
-                viewModel.removeById(post.id)
+                if (viewModelAuth.authenticated) {
+                    viewModel.removeById(post.id)
+                } else {
+                    authenticate()
+                }
             }
 
             override fun onEditListener(post: Post) {
-                viewModel.edit(post)
-                findNavController().navigate(
-                    R.id.action_feedFragment_to_editPostFragment,
-                    Bundle().apply {
-                        textArg = post.content
-                    }
-                )
+                if (viewModelAuth.authenticated) {
+                    viewModel.edit(post)
+                    findNavController().navigate(
+                        R.id.action_feedFragment_to_editPostFragment,
+                        Bundle().apply {
+                            textArg = post.content
+                        }
+                    )
+                } else {
+                    authenticate()
+                }
             }
 
             override fun onImageListner(image: String) {
@@ -75,7 +90,7 @@ class FeedFragment : Fragment() {
                     R.id.action_feedFragment_to_imageFragment, bundle
                 )
             }
-           /* override fun onPlayVideoListener(post: Post) {
+            /* override fun onPlayVideoListener(post: Post) {
                 val intentVideo = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                 startActivity(intentVideo)
             }*/
@@ -131,8 +146,13 @@ class FeedFragment : Fragment() {
         }
 
         binding.addPost.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if (viewModelAuth.authenticated) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else {
+                authenticate()
+            }
         }
+
         binding.swipeRefresh.setColorSchemeResources(
             android.R.color.holo_blue_dark
         )
@@ -155,6 +175,8 @@ class FeedFragment : Fragment() {
     companion object {
         var Bundle.idArg: Int by IntArg
     }
+
+    private fun authenticate() = findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
 
     object IntArg : ReadWriteProperty<Bundle, Int> {
         override fun getValue(thisRef: Bundle, property: KProperty<*>): Int {

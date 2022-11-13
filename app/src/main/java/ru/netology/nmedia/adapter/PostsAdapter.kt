@@ -56,6 +56,29 @@ class PostViewHolder(
             views.text = numbersToString(post.views)
             attachment.visibility = View.GONE
 
+            menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.options_post)
+                    // TODO: if we don't have other options, just remove dots
+                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.remove -> {
+                                listener.onRemoveListener(post)
+                                true
+                            }
+                            R.id.edit -> {
+                                listener.onEditListener(post)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
+
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
             Glide.with(itemView)
                 .load(url)

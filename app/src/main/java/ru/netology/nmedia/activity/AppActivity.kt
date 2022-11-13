@@ -1,24 +1,27 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
+import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity() {
+
+    private val viewModel by viewModels<AuthViewModel>()
 
     private lateinit var binding: ActivityAppBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +30,36 @@ class AppActivity : AppCompatActivity() {
         binding = ActivityAppBinding.inflate(layoutInflater)
         setContentView(binding.root)
         handleIntent(intent)
+
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+         menu.let {
+            it.setGroupVisible(R.id.unauthenticated, !viewModel.authenticated)
+            it.setGroupVisible(R.id.authenticated, viewModel.authenticated)
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.signin -> {
+                //AppAuth.getInstance().setAuth(5, "x-token")
+                findNavController(R.id.fragmentContainer).navigate(R.id.action_feedFragment_to_signInFragment)
+                true
+            }
+            R.id.signup -> {
+                //AppAuth.getInstance().setAuth(5, "x-token")
+                findNavController(R.id.fragmentContainer).navigate(R.id.action_feedFragment_to_signUpFragment)
+                true
+            }
+            R.id.signout -> {
+                AppAuth.getInstance().removeAuth()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -56,6 +89,10 @@ class AppActivity : AppCompatActivity() {
                     })
 
             }
+
+        }
+        viewModel.data.observe(this) {
+            invalidateOptionsMenu()
         }
         lifecycleScope
 

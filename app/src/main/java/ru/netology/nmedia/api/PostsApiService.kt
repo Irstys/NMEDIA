@@ -11,7 +11,7 @@ import retrofit2.http.*
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
-import java.util.concurrent.TimeUnit
+import ru.netology.nmedia.dto.User
 
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
@@ -63,6 +63,21 @@ interface PostsApiService {
         @Part part: MultipartBody.Part,
         @Part content: MultipartBody.Part,
     ): Response<Media>
+
+    @FormUrlEncoded
+    @POST("users/authentication")
+    suspend fun updateUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+    ): Response<User>
+
+    @FormUrlEncoded
+    @POST("users/registration")
+    suspend fun registrationUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+        @Field("name") name: String,
+    ): Response<User>
 }
 
    /* @POST("posts/{id}/likes")

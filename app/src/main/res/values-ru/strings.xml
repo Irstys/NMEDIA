@@ -36,4 +36,17 @@
     <string name="post_input_text_hint">Введите текст</string>
     <string name="description_pick_photo">Выберите изображение</string>
     <string name="description_image_full_screen">Полноэкранный режим</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_out">Выйти</string>
+    <string name="sign_in_name">Авторизация</string>
+    <string name="sign_in_button">Войти</string>
+    <string name="sign_up_button">Зарегистрироваться</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="sign_up_name">Регистрация</string>
+    <string name="sign_name">Имя</string>
+    <string name="password_error">Неверный пароль</string>
+    <string name="registration">Зарегистрироваться</string>
+    <string name="repeat_enter_password">Введите пароль снова</string>
 </resources>
