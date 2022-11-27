@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import kotlin.random.Random
 
 
@@ -34,6 +35,8 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
+        val push = gson.fromJson(message.data[content], Push::class.java)
+        val someId = AppAuth.getInstance().authStateFlow.value.id
 
         try {
             message.data[action]?.let {
@@ -55,11 +58,33 @@ class FCMService : FirebaseMessagingService() {
         } catch (error: IllegalArgumentException) {
             errorNotification(gson.fromJson(message.data[content], Notification::class.java))
         }
+        when (push.recipientId) {
+            someId, null -> {
+                sendNotification(push)
+            }
+            else -> AppAuth.getInstance().sendPushToken()
+        }
     }
 
+    private fun sendNotification(push: Push) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(
+                getString(
+                    R.string.notification_user_login,
+                    push.content
+                )
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(Random.nextInt(100_000), notification)
+    }
 
     override fun onNewToken(token: String) {
         println(token)
+        AppAuth.getInstance().sendPushToken(token)
     }
 
     private fun errorNotification(content: Notification) {
@@ -138,4 +163,9 @@ data class NewPost(
 
 data class Notification(
     val textNotification: String
+)
+
+data class Push(
+    val content: String,
+    val recipientId: Long?,
 )

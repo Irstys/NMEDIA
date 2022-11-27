@@ -49,4 +49,5 @@
     <string name="password_error">Неверный пароль</string>
     <string name="registration">Зарегистрироваться</string>
     <string name="repeat_enter_password">Введите пароль снова</string>
+    <string name="notification_user_login">Логин пользователя id %1$s</string>
 </resources>

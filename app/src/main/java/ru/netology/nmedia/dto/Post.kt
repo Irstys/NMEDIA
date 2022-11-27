@@ -18,7 +18,7 @@ data class Post(
     val video: String? = null,
     val ownedByMe: Boolean = false,
     val viewed: Boolean = false,
-    )
+)
 
 data class Attachment(
     val url: String,
