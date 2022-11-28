@@ -5,12 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.User
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.repository.AuthRepository
+import javax.inject.Inject
 
-class SignInViewModel : ViewModel(){
-    private val repository = AuthRepository()
+class SignInViewModel   @Inject constructor(
+    val auth: AppAuth,
+    private val repository: AuthRepository
+) : ViewModel() {
 
     private val _data = MutableLiveData<User>()
     val data: LiveData<User>

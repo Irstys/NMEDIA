@@ -4,10 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
-import ru.netology.nmedia.databinding.ActivityIntentHandlerBinding
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-
+import ru.netology.nmedia.databinding.ActivityIntentHandlerBinding
+@AndroidEntryPoint
 class IntentHandlerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

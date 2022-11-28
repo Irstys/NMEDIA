@@ -2,8 +2,6 @@ package ru.netology.nmedia.activity
 
 import android.app.Activity
 import android.net.Uri
-import com.github.dhaval2404.imagepicker.ImagePicker
-import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,7 +10,10 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentEditPostBinding
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
@@ -20,7 +21,7 @@ import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-
+@AndroidEntryPoint
 class EditPostFragment : Fragment() {
 
     private val viewModel: PostViewModel by viewModels(

@@ -1,9 +1,9 @@
 package ru.netology.nmedia.api
 
 import androidx.room.Query
+import okhttp3.Interceptor
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,20 +17,20 @@ import ru.netology.nmedia.dto.User
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
 
-private val logging = HttpLoggingInterceptor().apply {
-    if (BuildConfig.DEBUG) {
-        level = HttpLoggingInterceptor.Level.BODY
+fun okhttp(vararg interceptors: Interceptor): OkHttpClient = OkHttpClient.Builder()
+    .apply {
+        interceptors.forEach {
+            this.addInterceptor(it)
+        }
     }
-}
-private val okhttp = OkHttpClient.Builder()
-    .addInterceptor(logging)
     .build()
 
-private val retrofit = Retrofit.Builder()
+fun retrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
     .baseUrl(BASE_URL)
-    .client(okhttp)
+    .client(client)
     .build()
+
 
 interface ApiService {
     @POST("users/push-tokens")
@@ -90,9 +90,3 @@ interface ApiService {
     @DELETE("posts/{id}/likes")
     suspend fun dislikeById(@Path("id") id: Long): Response<Post>*/
 
-
-object Api {
-    val retrofitService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
-    }
-}

@@ -1,28 +1,25 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.Api
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.RetryTypes
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import javax.inject.Inject
 
 private val empty = Post(
     id = 0,
@@ -36,17 +33,23 @@ private val empty = Post(
     viewed = false,
     repost = 0,
     views = 0,
-    video = ""
+    video = "",
+    attachment = Attachment(
+        url = "http://10.0.2.2:9999/media/d7dff806-4456-4e35-a6a1-9f2278c5d639.png",
+        type = AttachmentType.IMAGE
+    )
 )
 private val noPhoto = PhotoModel()
 
-class PostViewModel(application: Application) : AndroidViewModel(application) {
-    // упрощённый вариант
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel
 
-    val data: LiveData<FeedModel> = AppAuth.getInstance()
-        .authStateFlow
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+    auth: AppAuth,
+    ) : ViewModel(){
+
+    val data: LiveData<FeedModel> = auth.authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data
                 .map { posts ->
@@ -150,7 +153,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 if (post != null) {
-                    Api.retrofitService.save(post)
+                    repository.save(post)
                     loadPosts()
                 }
             } catch (e: Exception) {

@@ -14,15 +14,20 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
+    @Inject
+    lateinit var auth: AppAuth
 
-    private val viewModel by viewModels<AuthViewModel>()
+    private val viewModel: AuthViewModel by viewModels()
 
     private lateinit var binding: ActivityAppBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +63,7 @@ class AppActivity : AppCompatActivity() {
                 true
             }
             R.id.signout -> {
-                AppAuth.getInstance().removeAuth()
+                auth.removeAuth()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -108,7 +113,7 @@ class AppActivity : AppCompatActivity() {
             println(token)
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -120,9 +125,14 @@ class AppActivity : AppCompatActivity() {
         checkGoogleApiAvailability()
 
     }
+    @Inject
+    lateinit var firebaseMessaging:FirebaseMessaging
+
+    @Inject
+    lateinit var googleApiAvailability: GoogleApiAvailability
 
     private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+        with(googleApiAvailability) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with
@@ -135,7 +145,7 @@ class AppActivity : AppCompatActivity() {
                 .show()
         }
 
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+        firebaseMessaging.token.addOnSuccessListener {
             println(it)
         }
     }

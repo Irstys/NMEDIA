@@ -5,17 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
-import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentSignInBinding
 import ru.netology.nmedia.viewmodel.SignInViewModel
 
-
+@AndroidEntryPoint
 class SignInFragment : Fragment() {
 
-    private val viewModel: SignInViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val viewModel: SignInViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,7 +27,7 @@ class SignInFragment : Fragment() {
         val binding = FragmentSignInBinding.inflate(inflater, container, false)
 
         viewModel.data.observe(viewLifecycleOwner) {
-            AppAuth.getInstance().setAuth(it.id, it.token)
+            viewModel.auth.setAuth(it.id, it.token)
             findNavController().navigateUp()
         }
 

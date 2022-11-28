@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -22,10 +24,10 @@ import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
 
-    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val viewModel: PostViewModel by activityViewModels()
 
     private val viewModelAuth: AuthViewModel by viewModels(ownerProducer = ::requireParentFragment)
 

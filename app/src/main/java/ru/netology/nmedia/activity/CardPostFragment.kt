@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FeedFragment.Companion.idArg
 import ru.netology.nmedia.databinding.FragmentCardPostBinding
@@ -18,7 +19,7 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.numbersToString
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
-
+@AndroidEntryPoint
 class CardPostFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
