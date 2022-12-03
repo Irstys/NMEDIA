@@ -8,26 +8,38 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.CardPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
+import ru.netology.nmedia.adapter.PostLoadStateAdapter
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.RetryTypes.*
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
+import javax.inject.Inject
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
+    @Inject
+    lateinit var repository: PostRepository
 
-    private val viewModel: PostViewModel by activityViewModels()
+    @Inject
+    lateinit var auth: AppAuth
+
+    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
     private val viewModelAuth: AuthViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
@@ -44,7 +56,7 @@ class FeedFragment : Fragment() {
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLikeListener(post: Post) {
                 if (viewModelAuth.authenticated) {
-                viewModel.likeById(post.id, post.likedByMe)
+                    viewModel.likeById(post.id, post.likedByMe)
                 } else {
                     authenticate()
                 }
@@ -106,11 +118,22 @@ class FeedFragment : Fragment() {
                 )
             }
         })
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PostLoadStateAdapter { adapter.retry() },
+            footer = PostLoadStateAdapter { adapter.retry() },
+        )
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.emptyText.isVisible = state.empty
+        /* lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest(adapter::submitData)
+        }*/
+
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.swipeRefresh.isRefreshing =
+                    state.refresh is LoadState.Loading ||
+                            state.prepend is LoadState.Loading ||
+                            state.append is LoadState.Loading
+            }
         }
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -132,7 +155,7 @@ class FeedFragment : Fragment() {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
+        /*viewModel.data.observe(viewLifecycleOwner) { state ->
             val newPosts = state.posts.size > adapter.currentList.size
             adapter.submitList(state.posts) {
                 if (newPosts) {
@@ -140,7 +163,7 @@ class FeedFragment : Fragment() {
                 }
             }
             binding.emptyText.isVisible = state.empty
-        }
+        }*/
 
 
         binding.retryButton.setOnClickListener {
@@ -178,7 +201,8 @@ class FeedFragment : Fragment() {
         var Bundle.idArg: Int by IntArg
     }
 
-    private fun authenticate() = findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+    private fun authenticate() =
+        findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
 
     object IntArg : ReadWriteProperty<Bundle, Int> {
         override fun getValue(thisRef: Bundle, property: KProperty<*>): Int {

@@ -20,6 +20,7 @@ import kotlin.random.Random
 class FCMService : FirebaseMessagingService() {
     @Inject
     lateinit var auth: AppAuth
+
     @Inject
     lateinit var apiService: ApiService
 
@@ -33,7 +34,7 @@ class FCMService : FirebaseMessagingService() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_remote_name)
-            val descriptionText =   getString(R.string.channel_remote_description)
+            val descriptionText = getString(R.string.channel_remote_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText

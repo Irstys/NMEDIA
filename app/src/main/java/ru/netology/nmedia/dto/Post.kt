@@ -2,9 +2,8 @@ package ru.netology.nmedia.dto
 
 import ru.netology.nmedia.enumeration.AttachmentType
 
-
 data class Post(
-    val id: Long,
+    override val id: Long,
     val authorId: Long,
     val author: String,
     val authorAvatar: String,
@@ -18,7 +17,7 @@ data class Post(
     val video: String? = null,
     val ownedByMe: Boolean = false,
     val viewed: Boolean = false,
-)
+) : FeedItem
 
 data class Attachment(
     val url: String,
