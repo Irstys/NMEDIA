@@ -1,6 +1,9 @@
 package ru.netology.nmedia.repository
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -8,7 +11,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.ApiService
@@ -18,7 +20,6 @@ import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.error.ApiError
@@ -29,13 +30,16 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
+@JvmSuppressWildcards
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
     private val apiService: ApiService,
 ) : PostRepository {
-    override val data = postDao.getAll()
-        .map { it.toDto() }
-        .flowOn(Dispatchers.Default)
+
+    override val data: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 6, enablePlaceholders = false),
+        pagingSourceFactory = { PostPagingSource(apiService) },
+    ).flow
 
     override suspend fun getAll() {
         try {
@@ -109,6 +113,7 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
+
     override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
         try {
             val media = uploadWithContent(upload)
@@ -141,6 +146,7 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
+
     override suspend fun removeById(id: Long) {
         try {
             postDao.removeById(id)
@@ -161,7 +167,7 @@ class PostRepositoryImpl @Inject constructor(
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-           val body = response.body() ?: throw ApiError(response.code(), response.message())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
             postDao.insert(PostEntity.fromDto(body))
         } catch (e: IOException) {
             throw NetworkError
@@ -180,3 +186,4 @@ class PostRepositoryImpl @Inject constructor(
         postDao.markRead()
     }
 }
+

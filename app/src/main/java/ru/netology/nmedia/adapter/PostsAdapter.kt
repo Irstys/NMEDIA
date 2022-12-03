@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.CardAddBinding
+import ru.netology.nmedia.databinding.CardAdBinding
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Ad
 import ru.netology.nmedia.dto.FeedItem
@@ -25,19 +25,19 @@ interface OnInteractionListener {
     fun onShareListener(post: Post) {}
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
-
+    fun onAdClick(ad: Ad) {}
     //  fun onPlayVideoListener(post: Post) {}
     fun onPostListner(post: Post) {}
     fun onImageListner(image: String) {}
 }
 
 class PostsAdapter(
-    private val listener: OnInteractionListener
+    private val listener: OnInteractionListener,
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallback()) {
 
     override fun getItemViewType(position: Int): Int =
         when (getItem(position)) {
-            is Ad -> R.layout.card_add
+            is Ad -> R.layout.card_ad
             is Post -> R.layout.card_post
             null -> error("unknow item type")
         }
@@ -49,10 +49,10 @@ class PostsAdapter(
                     CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 PostViewHolder(binding, listener)
             }
-            R.layout.card_add -> {
+            R.layout.card_ad -> {
                 val binding =
-                    CardAddBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                AdViewHolder(binding)
+                    CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                AdViewHolder(binding,listener)
             }
             else -> error("unknow item type $viewType")
         }
@@ -67,16 +67,21 @@ class PostsAdapter(
 }
 
 class AdViewHolder(
-    private val bindiding: CardAddBinding,
-) : RecyclerView.ViewHolder(bindiding.root) {
+    private val binding: CardAdBinding,
+    private val listener: OnInteractionListener,
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(ad: Ad) {
-        bindiding.image.load("${BuildConfig.BASE_URL}/media/${ad.name}")
+        binding.image.load("${BuildConfig.BASE_URL}/media/${ad.name}")
+        binding.image.setOnClickListener {
+            listener.onAdClick(ad)
+        }
     }
 }
 
+
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val listener: OnInteractionListener
+    private val listener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {

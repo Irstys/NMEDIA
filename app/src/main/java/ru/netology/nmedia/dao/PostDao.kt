@@ -56,6 +56,9 @@ interface PostDao {
 
     @Query("UPDATE posts SET viewed = 1 WHERE viewed = 0")
     suspend fun viewedPosts()
+
+    @Query("DELETE FROM posts")
+    suspend fun removeAll()
 }
 class Converters {
     @TypeConverter
