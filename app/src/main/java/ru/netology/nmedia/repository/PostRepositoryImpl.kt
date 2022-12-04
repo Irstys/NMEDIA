@@ -13,33 +13,37 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dto.Attachment
-import ru.netology.nmedia.dto.Media
-import ru.netology.nmedia.dto.MediaUpload
-import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.DbError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+const val PAGE_SIZE = 8
+const val ENABLE_PLACE_HOLDERS = false
+
 @Singleton
 @JvmSuppressWildcards
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
     private val apiService: ApiService,
+    mediator: PostRemoteMediator
 ) : PostRepository {
 
     override val data: Flow<PagingData<Post>> = Pager(
-        config = PagingConfig(pageSize = 6, enablePlaceholders = false),
+        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = ENABLE_PLACE_HOLDERS),
         pagingSourceFactory = { PostPagingSource(apiService) },
     ).flow
+
 
     override suspend fun getAll() {
         try {
@@ -63,10 +67,10 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getNewerCount(firstId: Long): Flow<Int> = flow {
+    override fun getNewerCount(): Flow<Int> = flow {
         try {
             while (true) {
-                val response = apiService.getNewer(firstId)
+                val response = apiService.getNewer(getMaxId())
                 if (!response.isSuccessful) {
                     throw ApiError(response.code(), response.message())
                 }
@@ -147,6 +151,10 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun newerPostsViewed() {
+        postDao.allViewedTrue()
+    }
+
     override suspend fun removeById(id: Long) {
         try {
             postDao.removeById(id)
@@ -176,7 +184,29 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUser(login: String, pass: String): User {
+        try {
+            val response = apiService.updateUser(login, pass)
+            checkResponse(response)
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
 
+    override suspend fun registerUser(login: String, pass: String, name: String): User {
+        try {
+            val response = apiService.registrationUser(login, pass, name)
+            checkResponse(response)
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
     override suspend fun shareById(id: Long) {
         postDao.shareById(id)
         Log.e("PostRepositoryImpl", "Share is not yet implemented")
@@ -184,6 +214,15 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun markRead() {
         postDao.markRead()
+    }
+    override suspend fun getPostById(id: Long) = postDao.getPostById(id)?.toDto() ?: throw DbError
+
+    override suspend fun getMaxId() = postDao.getPostMaxId()?.toDto()?.id ?: throw DbError
+}
+
+private fun checkResponse(response: Response<out Any>) {
+    if (!response.isSuccessful) {
+        throw ApiError(response.code(), response.message())
     }
 }
 

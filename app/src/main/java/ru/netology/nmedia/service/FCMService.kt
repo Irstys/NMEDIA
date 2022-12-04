@@ -113,6 +113,7 @@ class FCMService : FirebaseMessagingService() {
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
+        println(content)
 
         NotificationManagerCompat.from(this)
             .notify(Random.nextInt(100_000), notification)

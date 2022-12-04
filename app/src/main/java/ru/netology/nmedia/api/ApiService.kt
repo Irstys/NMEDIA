@@ -8,10 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import ru.netology.nmedia.BuildConfig
-import ru.netology.nmedia.dto.Media
-import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.dto.PushToken
-import ru.netology.nmedia.dto.User
+import ru.netology.nmedia.dto.*
 import androidx.room.Query as Query1
 
 
@@ -48,13 +45,13 @@ interface ApiService {
     @GET("posts/{id}/before")
     suspend fun getBefore(
         @Path("id") id: Long,
-        @Query("count") count: Int
+        @Query("count") count: Int,
     ): Response<List<Post>>
 
     @GET("posts/{id}/after")
     suspend fun getAfter(
         @Path("id") id: Long,
-        @Query("count") count: Int
+        @Query("count") count: Int,
     ): Response<List<Post>>
 
     @GET("posts/latest")
@@ -74,7 +71,10 @@ interface ApiService {
                 WHERE id = :id AND likedByMe=:likedByMe
                 """
     )
-    suspend fun likeById(@Path("id") id: Long,@Path("likedByMe") likedByMe: Boolean): Response<Post>
+    suspend fun likeById(
+        @Path("id") id: Long,
+        @Path("likedByMe") likedByMe: Boolean,
+    ): Response<Post>
 
     @Multipart
     @POST("media")
@@ -97,9 +97,17 @@ interface ApiService {
         @Field("pass") pass: String,
         @Field("name") name: String,
     ): Response<User>
+
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("users/authentication")
+    @FormUrlEncoded
+    suspend fun getToken(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+    ): Response<User>
 }
 
-   /* @POST("posts/{id}/likes")
+/* @POST("posts/{id}/likes")
     suspend fun likeById(@Path("id") id: Long): Response<Post>
 
     @DELETE("posts/{id}/likes")

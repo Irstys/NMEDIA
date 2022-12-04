@@ -12,12 +12,11 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.CardAdBinding
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.dto.Ad
-import ru.netology.nmedia.dto.FeedItem
-import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.dto.numbersToString
+import ru.netology.nmedia.databinding.CardTextItemSeparatorBinding
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.view.load
 
 interface OnInteractionListener {
@@ -26,19 +25,23 @@ interface OnInteractionListener {
     fun onRemoveListener(post: Post) {}
     fun onEditListener(post: Post) {}
     fun onAdClick(ad: Ad) {}
+
     //  fun onPlayVideoListener(post: Post) {}
     fun onPostListner(post: Post) {}
     fun onImageListner(image: String) {}
+    fun onAuth()
 }
 
 class PostsAdapter(
     private val listener: OnInteractionListener,
+    private val appAuth: AppAuth,
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallback()) {
 
     override fun getItemViewType(position: Int): Int =
         when (getItem(position)) {
             is Ad -> R.layout.card_ad
             is Post -> R.layout.card_post
+            is TextItemSeparator -> R.layout.card_text_item_separator
             null -> error("unknow item type")
         }
 
@@ -47,12 +50,17 @@ class PostsAdapter(
             R.layout.card_post -> {
                 val binding =
                     CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                PostViewHolder(binding, listener)
+                PostViewHolder(binding, listener, appAuth)
             }
             R.layout.card_ad -> {
                 val binding =
                     CardAdBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                AdViewHolder(binding,listener)
+                AdViewHolder(binding, listener, appAuth)
+            }
+            R.layout.card_text_item_separator -> {
+                val binding =
+                    CardTextItemSeparatorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TextItemViewHolder(binding, listener, appAuth)
             }
             else -> error("unknow item type $viewType")
         }
@@ -61,14 +69,26 @@ class PostsAdapter(
         when (val item = getItem(position)) {
             is Ad -> (holder as? AdViewHolder)?.bind(item)
             is Post -> (holder as? PostViewHolder)?.bind(item)
+            is TextItemSeparator -> ((holder as? TextItemViewHolder)?.bind(item))
             null -> error("unknow item type")
         }
+    }
+}
+
+class TextItemViewHolder(
+    private val binding: CardTextItemSeparatorBinding,
+    private val listener: OnInteractionListener,
+    private val appAuth: AppAuth,
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(textItemSeparator: TextItemSeparator) {
+        binding.text.text = textItemSeparator.text
     }
 }
 
 class AdViewHolder(
     private val binding: CardAdBinding,
     private val listener: OnInteractionListener,
+    private val appAuth: AppAuth,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(ad: Ad) {
         binding.image.load("${BuildConfig.BASE_URL}/media/${ad.name}")
@@ -82,6 +102,7 @@ class AdViewHolder(
 class PostViewHolder(
     private val binding: CardPostBinding,
     private val listener: OnInteractionListener,
+    private val appAuth: AppAuth,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(post: Post) {
@@ -98,7 +119,6 @@ class PostViewHolder(
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
-                    // TODO: if we don't have other options, just remove dots
                     menu.setGroupVisible(R.id.owned, post.ownedByMe)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
@@ -144,6 +164,10 @@ class PostViewHolder(
             share.text = numbersToString(post.repost)
 
             like.setOnClickListener {
+                if (appAuth.authStateFlow.value.id == 0L) {
+                    listener.onAuth()
+                    return@setOnClickListener
+                }
                 listener.onLikeListener(post)
             }
             share.setOnClickListener {
@@ -167,27 +191,6 @@ class PostViewHolder(
                     listener.onImageListner(attach.url)
                 }
 
-                menu.setOnClickListener {
-                    PopupMenu(it.context, it).apply {
-                        inflate(R.menu.options_post)
-
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.remove -> {
-                                    listener.onRemoveListener(post)
-                                    true
-                                }
-                                R.id.edit -> {
-                                    listener.onEditListener(post)
-                                    true
-                                }
-
-                                else -> false
-                            }
-                        }
-                    }.show()
-
-                }
             }
         }
     }

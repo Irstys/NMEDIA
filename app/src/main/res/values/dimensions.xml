@@ -10,4 +10,5 @@
     <dimen name="textSpacing">8dp</dimen>
     <dimen name="commonSpacingSmall">4dp</dimen>
     <dimen name="editTextSize">12sp</dimen>
+    <dimen name="height_image_ad">300dp</dimen>
 </resources>

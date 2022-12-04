@@ -50,4 +50,8 @@
     <string name="registration">Зарегистрироваться</string>
     <string name="repeat_enter_password">Введите пароль снова</string>
     <string name="notification_user_login">Логин пользователя id %1$s</string>
+    <string name="dateName">Сегодня</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="more_old">Ранее</string>
 </resources>

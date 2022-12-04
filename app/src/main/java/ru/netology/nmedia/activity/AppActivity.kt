@@ -12,7 +12,6 @@ import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
@@ -22,10 +21,16 @@ import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
     @Inject
     lateinit var auth: AppAuth
+    @Inject
+    lateinit var firebaseMessaging:FirebaseMessaging
+
+    @Inject
+    lateinit var googleApiAvailability: GoogleApiAvailability
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -103,16 +108,6 @@ class AppActivity : AppCompatActivity() {
             invalidateOptionsMenu()
         }
         lifecycleScope
-        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                println("some stuff happened: ${task.exception}")
-                return@addOnCompleteListener
-            }
-
-            val token = task.result
-            println(token)
-        }
-
         firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
@@ -125,11 +120,7 @@ class AppActivity : AppCompatActivity() {
         checkGoogleApiAvailability()
 
     }
-    @Inject
-    lateinit var firebaseMessaging:FirebaseMessaging
 
-    @Inject
-    lateinit var googleApiAvailability: GoogleApiAvailability
 
     private fun checkGoogleApiAvailability() {
         with(googleApiAvailability) {

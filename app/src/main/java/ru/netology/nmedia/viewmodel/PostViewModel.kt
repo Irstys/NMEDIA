@@ -1,23 +1,31 @@
 package ru.netology.nmedia.viewmodel
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.enumeration.SeparatorTimeType
+import ru.netology.nmedia.hiltModules.CurrentTime
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.RetryTypes
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -28,7 +36,7 @@ private val empty = Post(
     author = "",
     authorId = 0,
     likedByMe = false,
-    published = 221220L,
+    published = 221220L.toString(),
     likes = 0,
     viewed = false,
     repost = 0,
@@ -45,18 +53,25 @@ private val noPhoto = PhotoModel()
 @HiltViewModel
 
 class PostViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val repository: PostRepository,
-    auth: AppAuth,
+    private val auth: AppAuth,
+    private val currentTime: CurrentTime
 ) : ViewModel() {
+
 
     /*  private val cached = repository
         .data
         .cachedIn(viewModelScope)*/
-    private val cached: Flow<PagingData<FeedItem>> = repository
+
+    private val cached
+        get() = repository.data.cachedIn(viewModelScope)
+
+    /*private val cached: Flow<PagingData<Post>> = repository
         .data
         .map { pagingData ->
             pagingData.insertSeparators(
-                generator = { before, after ->
+                generator = { before, _ ->
                     if (before?.id?.rem(5) == 0L) {
                         Ad(Random.nextLong(), "figma.jpg")
                     } else {
@@ -64,21 +79,59 @@ class PostViewModel @Inject constructor(
                     }
                 })
         }
-        .cachedIn(viewModelScope)
+        .cachedIn(viewModelScope)*/
 
+    @SuppressLint("SimpleDateFormat")
     val data: Flow<PagingData<FeedItem>> = auth.authStateFlow
         .flatMapLatest { (myId, _) ->
             cached.map { pagingData ->
-                pagingData.map { post ->
-                    if (post is Post) {
-                        post.copy(ownedByMe = post.authorId == myId)
-                    } else {
-                        post
+                pagingData.insertSeparators(
+                    generator = { before, after ->
+                        val beforeTime =currentTime.getDaySeparatorType(time = before?.published?.toLong())
+                        val afterTime = currentTime.getDaySeparatorType(after?.published?.toLong())
+
+                        val text = when {
+                            beforeTime == SeparatorTimeType.NULL && afterTime == SeparatorTimeType.TODAY ->
+                                context.getString(R.string.today)
+                            beforeTime == SeparatorTimeType.TODAY && afterTime == SeparatorTimeType.YESTERDAY ->
+                                context.getString(R.string.yesterday)
+                            beforeTime == SeparatorTimeType.YESTERDAY && afterTime == SeparatorTimeType.MORE_OLD ->
+                                context.getString(R.string.more_old)
+                            else -> null
+                        }
+                        text?.let { TextItemSeparator(Random.nextLong(), it) } ?: run { null }
                     }
-                }
+                )
+                pagingData.insertSeparators(
+                    generator = { before, _ ->
+                        if (before?.id?.rem(5) == 0L) {
+                            Ad(Random.nextLong(), "figma.jpg")
+                        } else {
+                            null
+                        }
+                    })
+                    .map { feedItem ->
+                        when (feedItem) {
+                            is Post -> {
+                                feedItem.copy(
+                                    ownedByMe = feedItem.authorId == myId,
+                                    published = SimpleDateFormat("dd.MM.yy HH:mm:ss").format(feedItem.published.toLong() * 1000L)
+                                )
+                            }
+                            is TextItemSeparator -> {
+                                feedItem
+                            }
+                            else -> {
+                                feedItem
+                            }
+                        }
+                    }
             }
         }
 
+    val authenticated = auth
+        .authStateFlow.map { it.id != 0L }
+        .asLiveData(Dispatchers.Default)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -90,13 +143,25 @@ class PostViewModel @Inject constructor(
         get() = _postCreated
 
 
-    val newerCount: LiveData<Long> = MutableLiveData(empty.id)
+    val newerCount: LiveData<Int> = repository.getNewerCount()
+        .catch { e -> e.printStackTrace() }
+        .asLiveData(Dispatchers.Default)
+
+    /*MutableLiveData(empty.id)*/
     /* val newerCount: LiveData<Int> = data.switchMap {
             repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
                 .catch { e -> e.printStackTrace() }
                 .asLiveData(Dispatchers.Default)
         }
     }*/
+    fun markNewerPostsViewed() = viewModelScope.launch {
+        try {
+            repository.newerPostsViewed()
+        } catch (e: Exception) {
+            println("PW $e")
+            return@launch
+        }
+    }
 
     private val _photo = MutableLiveData(noPhoto)
     val photo: LiveData<PhotoModel>
@@ -107,6 +172,11 @@ class PostViewModel @Inject constructor(
     init {
         loadPosts()
     }
+
+    fun forAuthenticated() {
+        edited.postValue(empty.copy(authorId = auth.authStateFlow.value.id))
+    }
+
 
     fun loadPosts() = viewModelScope.launch {
         try {
@@ -140,6 +210,7 @@ class PostViewModel @Inject constructor(
 
     fun shareById(id: Long) = viewModelScope.launch {
         repository.shareById(id)
+
     }
 
     fun changeContent(content: String) {
@@ -226,6 +297,19 @@ class PostViewModel @Inject constructor(
     fun markRead() {
         viewModelScope.launch {
             repository.markRead()
+        }
+    }
+
+    fun cancel() {
+        edited.value = empty
+    }
+
+    fun registerUser(login: String, pass: String, name: String) = viewModelScope.launch {
+        try {
+            val authState = repository.registerUser(login, pass, name)
+            auth.setAuth(authState.id, authState.token)
+        } catch (e: Exception) {
+            Log.i("updateUser", e.message.toString())
         }
     }
 

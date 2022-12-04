@@ -7,6 +7,8 @@ import ru.netology.nmedia.enumeration.AttachmentType
 
 @Dao
 interface PostDao {
+    @Query("UPDATE posts SET viewed = 1")
+    suspend fun allViewedTrue()
 
     @Query("SELECT * FROM posts ORDER BY id DESC")
     fun getAll(): Flow<List<PostEntity>>
@@ -59,10 +61,18 @@ interface PostDao {
 
     @Query("DELETE FROM posts")
     suspend fun removeAll()
+
+    @Query("SELECT * FROM posts WHERE id = :id")
+    suspend fun getPostById(id: Long): PostEntity?
+
+    @Query("SELECT * FROM posts ORDER BY id DESC LIMIT 1")
+    suspend fun getPostMaxId(): PostEntity?
 }
 class Converters {
     @TypeConverter
     fun toAttachmentType(value: String) = enumValueOf<AttachmentType>(value)
     @TypeConverter
     fun fromAttachmentType(value: AttachmentType) = value.name
+
+
 }

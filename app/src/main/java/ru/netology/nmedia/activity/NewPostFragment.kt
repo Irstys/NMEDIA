@@ -9,6 +9,7 @@ import androidx.core.net.toFile
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
@@ -17,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -25,6 +27,14 @@ class NewPostFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
 
     private var fragmentBinding: FragmentNewPostBinding? = null
+
+    private val postVewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
+
+    private val authViewModel: AuthViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,6 +107,12 @@ class NewPostFragment : Fragment() {
 
             binding.photoLayout.visibility = View.VISIBLE
             binding.photo.setImageURI(it.uri)
+        }
+
+        authViewModel.data.observe(viewLifecycleOwner) {
+            if (authViewModel.data.value?.id == 0L) {
+                findNavController().navigateUp()
+            }
         }
 
         requireActivity().addMenuProvider(object : MenuProvider {

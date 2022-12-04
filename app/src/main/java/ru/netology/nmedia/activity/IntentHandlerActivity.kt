@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityIntentHandlerBinding
+
 @AndroidEntryPoint
 class IntentHandlerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +22,7 @@ class IntentHandlerActivity : AppCompatActivity() {
                 return@let
             }
 
-        val text = it.getStringExtra(Intent.EXTRA_TEXT)
+            val text = it.getStringExtra(Intent.EXTRA_TEXT)
             if (text.isNullOrBlank()) {
                 Snackbar.make(binding.root, R.string.error_empty_content, LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok) {

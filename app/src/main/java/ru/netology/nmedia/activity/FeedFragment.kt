@@ -46,7 +46,7 @@ class FeedFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         val binding = FragmentFeedBinding.inflate(
             inflater,
@@ -117,24 +117,40 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-        })
+
+            override fun onAuth() {
+                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+            }
+        },
+
+            auth
+        )
+
         binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
             header = PostLoadStateAdapter { adapter.retry() },
             footer = PostLoadStateAdapter { adapter.retry() },
         )
 
-        /* lifecycleScope.launchWhenCreated {
-            viewModel.data.collectLatest(adapter::submitData)
-        }*/
-
         lifecycleScope.launchWhenCreated {
-            adapter.loadStateFlow.collectLatest { state ->
-                binding.swipeRefresh.isRefreshing =
-                    state.refresh is LoadState.Loading ||
-                    state.prepend is LoadState.Loading ||
-                    state.append is LoadState.Loading
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
             }
         }
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.swipeRefresh.isRefreshing = state.refresh is LoadState.Loading
+                        || state.prepend is LoadState.Loading
+                        || state.append is LoadState.Loading
+                if (state.refresh is LoadState.Loading) {
+                    binding.list.smoothScrollToPosition(0)
+                }
+            }
+        }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            adapter.refresh()
+        }
+
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
