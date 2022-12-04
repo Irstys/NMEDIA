@@ -1,9 +1,7 @@
 package ru.netology.nmedia.repository
 
 import android.util.Log
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
+import androidx.paging.*
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
@@ -39,10 +38,14 @@ class PostRepositoryImpl @Inject constructor(
     mediator: PostRemoteMediator
 ) : PostRepository {
 
+    @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = ENABLE_PLACE_HOLDERS),
-        pagingSourceFactory = { PostPagingSource(apiService) },
-    ).flow
+        remoteMediator = mediator,
+        pagingSourceFactory = { postDao.getAll() },
+    ).flow.map { pagingData ->
+        pagingData.map(PostEntity::toDto)
+    }
 
 
     override suspend fun getAll() {
