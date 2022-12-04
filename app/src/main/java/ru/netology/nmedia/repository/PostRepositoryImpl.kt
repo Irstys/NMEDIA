@@ -15,6 +15,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toEntity
@@ -33,16 +35,18 @@ const val ENABLE_PLACE_HOLDERS = false
 @Singleton
 @JvmSuppressWildcards
 class PostRepositoryImpl @Inject constructor(
+    appDb: AppDb,
     private val postDao: PostDao,
     private val apiService: ApiService,
-    mediator: PostRemoteMediator
-) : PostRepository {
+    postRemoteKeyDao: PostRemoteKeyDao,
+
+    ) : PostRepository {
 
     @OptIn(ExperimentalPagingApi::class)
     override val data: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = ENABLE_PLACE_HOLDERS),
-        remoteMediator = mediator,
-        pagingSourceFactory = { postDao.getAll() },
+        remoteMediator = PostRemoteMediator(apiService, appDb, postDao, postRemoteKeyDao),
+        pagingSourceFactory = postDao::pagingSource,
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
     }
@@ -61,6 +65,7 @@ class PostRepositoryImpl @Inject constructor(
                     it.copy(viewed = true)
                 }
                 .toEntity())
+            postDao.getAll()
         } catch (e: ApiException) {
             throw e
         } catch (e: IOException) {
