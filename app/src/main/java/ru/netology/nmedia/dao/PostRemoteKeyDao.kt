@@ -7,7 +7,6 @@ import androidx.room.Query
 import ru.netology.nmedia.entity.PostRemoteKeyEntity
 
 @Dao
-@JvmSuppressWildcards
 interface PostRemoteKeyDao {
     @Query("SELECT COUNT(*) == 0 FROM PostRemoteKeyEntity")
     suspend fun isEmpty(): Boolean
@@ -19,7 +18,7 @@ interface PostRemoteKeyDao {
     suspend fun min(): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(key: PostRemoteKeyEntity)
+    suspend fun insert(postRemoteKeyEntity: PostRemoteKeyEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(keys: List<PostRemoteKeyEntity>)

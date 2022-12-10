@@ -35,23 +35,10 @@ interface PostDao {
     @Query("UPDATE posts SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)
 
-    @Query(
-        """
-                UPDATE posts SET
-                likes = likes + CASE WHEN likes THEN -1 ELSE 1 END,
-                likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
-                WHERE id = :id AND likedByMe=:likedByMe
-                """
-    )
+    @Query("UPDATE posts SET likes = likes + CASE WHEN likes THEN -1 ELSE 1 END,likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END WHERE id = :id AND likedByMe=:likedByMe")
     suspend fun likeById(id: Long, likedByMe: Boolean)
 
-    @Query(
-        """
-                UPDATE posts SET
-                repost = repost + 1
-                WHERE id = :id;
-                """
-    )
+    @Query("UPDATE posts SET repost = repost + 1 WHERE id = :id")
     fun shareById(id: Long)
 
     @Query("DELETE FROM posts WHERE id = :id")

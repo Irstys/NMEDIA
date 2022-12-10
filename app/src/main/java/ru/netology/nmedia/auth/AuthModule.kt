@@ -7,8 +7,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.netology.nmedia.api.ApiService
-import ru.netology.nmedia.auth.AppAuth
 import javax.inject.Singleton
 
 
@@ -21,10 +19,4 @@ object AuthModule {
     fun provideAuthPrefs(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
-    @Provides
-    @Singleton
-    fun provideAppAuth(
-        service: ApiService,
-        prefs: SharedPreferences
-    ): AppAuth = AppAuth(service, prefs)
 }

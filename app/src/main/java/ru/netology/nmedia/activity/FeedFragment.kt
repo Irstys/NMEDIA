@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
@@ -39,9 +39,8 @@ class FeedFragment : Fragment() {
     @Inject
     lateinit var auth: AppAuth
 
-    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
-
-    private val viewModelAuth: AuthViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val viewModel: PostViewModel by activityViewModels()
+    private val viewModelAuth: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -150,7 +149,6 @@ class FeedFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             adapter.refresh()
         }
-
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading

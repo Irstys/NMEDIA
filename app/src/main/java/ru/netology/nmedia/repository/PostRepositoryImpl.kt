@@ -47,9 +47,7 @@ class PostRepositoryImpl @Inject constructor(
         config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = ENABLE_PLACE_HOLDERS),
         remoteMediator = PostRemoteMediator(apiService, appDb, postDao, postRemoteKeyDao),
         pagingSourceFactory = postDao::pagingSource,
-    ).flow.map { pagingData ->
-        pagingData.map(PostEntity::toDto)
-    }
+    ).flow.map {it.map(PostEntity::toDto) }
 
 
     override suspend fun getAll() {

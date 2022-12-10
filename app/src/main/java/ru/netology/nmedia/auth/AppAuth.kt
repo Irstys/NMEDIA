@@ -22,7 +22,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppAuth @Inject constructor(
-    private val service: ApiService,
+    private val context: Context,
     private val authPrefs: SharedPreferences
 ) {
 
@@ -79,6 +79,7 @@ class AppAuth @Inject constructor(
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
+                val service = getApiService(context)
                 service.save(pushToken)
             } catch (e: Exception) {
                 e.printStackTrace()
