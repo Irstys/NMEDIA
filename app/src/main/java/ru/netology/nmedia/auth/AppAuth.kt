@@ -7,6 +7,7 @@ import com.google.firebase.messaging.ktx.messaging
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppAuth @Inject constructor(
+    @ApplicationContext
     private val context: Context,
     private val authPrefs: SharedPreferences
 ) {
@@ -52,7 +54,7 @@ class AppAuth @Inject constructor(
     @InstallIn(SingletonComponent::class)
     @EntryPoint
     interface AppAuthEntryPoint {
-        fun apiService(): ApiService
+        fun getApiService(): ApiService
     }
 
     @Synchronized
@@ -79,21 +81,15 @@ class AppAuth @Inject constructor(
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
-                val service = getApiService(context)
-                service.save(pushToken)
+                val entryPoint =
+                    EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
+                entryPoint.getApiService().sendPushToken(pushToken)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private fun getApiService(context: Context): ApiService {
-        val hiltEntryPoint = EntryPointAccessors.fromApplication(
-            context,
-            AppAuthEntryPoint::class.java
-        )
-        return hiltEntryPoint.apiService()
-    }
     fun deletePushToken(){
         CoroutineScope(Dispatchers.Default).launch {
             try {
@@ -103,24 +99,6 @@ class AppAuth @Inject constructor(
             }
         }
     }
-
-
-   /* companion object {
-        @Volatile
-        private var instance: AppAuth? = null
-
-        fun getInstance(): AppAuth = synchronized(this) {
-            instance ?: throw IllegalStateException(
-                "AppAuth is not initialized, you must call AppAuth.initializeApp(Context context) first."
-            )
-        }
-
-        fun initApp(context: Context): AppAuth = instance ?: synchronized(this) {
-            instance ?: buildAuth(context).also { instance = it }
-        }
-
-        private fun buildAuth(context: Context): AppAuth = AppAuth(context)
-    }*/
 }
 
 data class AuthState(val id: Long = 0, val token: String? = null)

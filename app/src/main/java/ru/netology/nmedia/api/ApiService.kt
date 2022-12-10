@@ -31,7 +31,7 @@ fun retrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
 
 interface ApiService {
     @POST("users/push-tokens")
-    suspend fun save(@Body pushToken: PushToken): Response<Unit>
+    suspend fun sendPushToken(@Body pushToken: PushToken): Response<Unit>
 
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>

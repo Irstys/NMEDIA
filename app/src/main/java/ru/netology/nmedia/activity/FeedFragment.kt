@@ -150,18 +150,18 @@ class FeedFragment : Fragment() {
             adapter.refresh()
         }
 
-        viewModel.dataState.observe(viewLifecycleOwner) { state ->
-            binding.progress.isVisible = state.loading
-            binding.swipeRefresh.isRefreshing = state.refreshing
-            binding.errorGroup.isVisible = state.error
-            if (state.error) {
+        viewModel.dataState.observe(viewLifecycleOwner) { (loading, error, refreshing, _, _, retryId, retryType, retryPost) ->
+            binding.progress.isVisible = loading
+            binding.swipeRefresh.isRefreshing = refreshing
+            binding.errorGroup.isVisible = error
+            if (error) {
                 Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry_loading) {
-                        when (state.retryType) {
-                            LIKE -> viewModel.likeById(state.retryId, false)
-                            UNLIKE -> viewModel.likeById(state.retryId, true)
-                            SAVE -> viewModel.retrySave(state.retryPost)
-                            REMOVE -> viewModel.removeById(state.retryId)
+                        when (retryType) {
+                            LIKE -> viewModel.likeById(retryId, false)
+                            UNLIKE -> viewModel.likeById(retryId, true)
+                            SAVE -> viewModel.retrySave(retryPost)
+                            REMOVE -> viewModel.removeById(retryId)
                             else -> viewModel.loadPosts()
                         }
                     }
