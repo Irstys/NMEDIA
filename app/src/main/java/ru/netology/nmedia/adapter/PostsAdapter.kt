@@ -86,7 +86,7 @@ class PostsAdapter(
                     holder.bind(it)
                 }
             }
-        } else {
+
             onBindViewHolder(holder, position)
         }
     }
@@ -132,6 +132,7 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(payload: Payload) {
         payload.liked?.also { liked ->
+
             binding.like.setIconResource(
                 if (liked) R.drawable.ic_liked_24 else R.drawable.ic_like_24
             )
