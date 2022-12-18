@@ -1,5 +1,7 @@
 package ru.netology.nmedia.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,11 +61,35 @@ class PostsAdapter(
             }
             R.layout.card_text_item_separator -> {
                 val binding =
-                    CardTextItemSeparatorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                    CardTextItemSeparatorBinding.inflate(LayoutInflater.from(parent.context),
+                        parent,
+                        false)
                 TextItemViewHolder(binding, listener, appAuth)
             }
             else -> error("unknow item type $viewType")
         }
+
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>,
+    ) {
+        when (val item = getItem(position)) {
+            is Ad -> (holder as? AdViewHolder)?.bind(item)
+            is Post -> (holder as? PostViewHolder)?.bind(item)
+            is TextItemSeparator -> ((holder as? TextItemViewHolder)?.bind(item))
+            null -> error("unknow item type")
+        }
+        if (holder is PostViewHolder) {
+            payloads.forEach {
+                if (it is Payload) {
+                    holder.bind(it)
+                }
+            }
+        } else {
+            onBindViewHolder(holder, position)
+        }
+    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
@@ -104,6 +130,28 @@ class PostViewHolder(
     private val listener: OnInteractionListener,
     private val appAuth: AppAuth,
 ) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(payload: Payload) {
+        payload.liked?.also { liked ->
+            binding.like.setIconResource(
+                if (liked) R.drawable.ic_liked_24 else R.drawable.ic_like_24
+            )
+            if (liked) {
+                ObjectAnimator.ofPropertyValuesHolder(
+                    binding.like,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0F, 1.2F, 1.0F, 1.2F),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0F, 1.2F, 1.0F, 1.2F)
+                ).start()
+            } else {
+                ObjectAnimator.ofFloat(
+                    binding.like,
+                    View.ROTATION,
+                    0F, 360F
+                ).start()
+            }
+        }
+
+        payload.content?.let(binding.content::setText)
+    }
 
     fun bind(post: Post) {
         binding.apply {
@@ -208,6 +256,20 @@ class PostDiffCallback : DiffUtil.ItemCallback<FeedItem>() {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: FeedItem, newItem: FeedItem): Any = Unit
+    override fun getChangePayload(oldItem: FeedItem, newItem: FeedItem): Any {
+        return if (oldItem::class != newItem::class) {
+        } else if (oldItem is Post && newItem is Post) {
+            Payload(
+                liked = newItem.likedByMe.takeIf { oldItem.likedByMe != it },
+                content = newItem.content.takeIf { oldItem.content != it },
+            )
+        } else {
 
+        }
+    }
 }
+
+data class Payload(
+    val liked: Boolean? = null,
+    val content: String? = null,
+)
