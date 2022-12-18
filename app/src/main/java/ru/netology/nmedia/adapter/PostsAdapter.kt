@@ -74,19 +74,13 @@ class PostsAdapter(
         position: Int,
         payloads: MutableList<Any>,
     ) {
-        when (val item = getItem(position)) {
-            is Ad -> (holder as? AdViewHolder)?.bind(item)
-            is Post -> (holder as? PostViewHolder)?.bind(item)
-            is TextItemSeparator -> ((holder as? TextItemViewHolder)?.bind(item))
-            null -> error("unknow item type")
-        }
-        if (holder is PostViewHolder) {
+        if (getItem(position)is Post) {
+            holder is PostViewHolder
             payloads.forEach {
                 if (it is Payload) {
                     holder.bind(it)
                 }
             }
-
             onBindViewHolder(holder, position)
         }
     }
